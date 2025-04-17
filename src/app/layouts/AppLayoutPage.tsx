@@ -1,0 +1,91 @@
+// src/app/layouts/AppLayout.tsx
+import { ReactNode } from "react"
+import { AppSidebar } from "@/components/app-sidebar"
+import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
+import { Separator } from "@/components/ui/separator"
+import {
+    SidebarInset,
+    SidebarProvider,
+    SidebarTrigger,
+} from "@/components/ui/sidebar"
+import { useSelector } from "react-redux"
+import { RootState } from "@/app/store"
+import { FaCircleUser } from "react-icons/fa6"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+
+interface AppLayoutProps {
+    children: ReactNode
+    breadcrumb?: { label: string; href?: string }[]
+}
+
+export default function AppLayout({ children, breadcrumb = [] }: AppLayoutProps) {
+    const user = useSelector((state: RootState) => state.user.user)
+    const username = user?.username?.split("@")[0] || "Guest"
+
+    return (
+        <SidebarProvider>
+            <AppSidebar />
+            <SidebarInset>
+                <header className="flex h-16 items-center gap-2 border-b px-4">
+                    <SidebarTrigger className="-ml-1" />
+                    <Separator orientation="vertical" className="mr-2 h-4 bg" />
+
+                    {/* Breadcrumb dynamique */}
+                    <Breadcrumb>
+                        <BreadcrumbList>
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href="/">Accueil</BreadcrumbLink>
+
+                            </BreadcrumbItem>
+                            {breadcrumb.map((item, index) => (
+                                <div key={index} className="flex items-center">
+                                    <BreadcrumbSeparator />
+                                    <BreadcrumbItem>
+                                        {item.href ? (
+                                            <BreadcrumbLink href={item.href}>{item.label}</BreadcrumbLink>
+                                        ) : (
+                                            <BreadcrumbPage>{item.label}</BreadcrumbPage>
+                                        )}
+                                    </BreadcrumbItem>
+                                </div>
+                            ))}
+                        </BreadcrumbList>
+                    </Breadcrumb>
+
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <div className="flex flex-col items-center ml-auto cursor-pointer">
+                                <FaCircleUser size={25} />
+                                <span className="text-sm text-gray-500">{username}</span>
+                            </div>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Mon compte</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem>Profil</DropdownMenuItem>
+                            <DropdownMenuItem>Facturation</DropdownMenuItem>
+                            <DropdownMenuItem>Équipe</DropdownMenuItem>
+                            <DropdownMenuItem>Abonnement</DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </header>
+
+                <main className="p-4">{children}</main>
+            </SidebarInset>
+        </SidebarProvider>
+    )
+}
