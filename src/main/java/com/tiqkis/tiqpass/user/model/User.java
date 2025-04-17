@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "users")
@@ -28,9 +29,7 @@ public class User implements UserDetails {
 
     @Column(nullable=false)
     private String password;
-
-    private String nom;
-    private String prenom;
+    private String nomprenom;
     private String adresse;
     private String telephone;
     @Enumerated(EnumType.STRING)
@@ -39,10 +38,13 @@ public class User implements UserDetails {
 
 
     @Enumerated(EnumType.STRING)
-    private Role role;
+    @ElementCollection(fetch = FetchType.EAGER)  // Permet de stocker une liste d'énumérations
+    private List<Role> roles;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority(role.name()))
+                .collect(Collectors.toList());
     }
 
 
