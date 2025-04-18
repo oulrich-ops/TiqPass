@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Data
@@ -16,13 +17,14 @@ public class Ticketing {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String eventName;
+    private String name;
     private String location;
-    private String postalAddress;
+    private String address;
     private LocalDate startDate;
     private LocalDate endDate;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
+    private String durationType;
 
     private String shortTextDescription;
     private String longTextDescription;
@@ -33,4 +35,10 @@ public class Ticketing {
 
     @ManyToOne
     private Promoter promoter;
+
+    @OneToMany(mappedBy = "ticketing", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PriceCategory> priceCategories;
+
+    @OneToOne
+    private Customization customization;
 }
