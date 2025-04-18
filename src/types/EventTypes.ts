@@ -1,11 +1,11 @@
 export interface EventGeneral {
   name: string;
-  type: string;
+  type: EventType;
   location: string;
   address: string;
   durationType: 'no_duration' | 'duration' | 'multiple_days';
-  startDate?: Date;
-  endDate?: Date;
+  startDate?: Date | string;
+  endDate?: Date | string;
 }
 
 export interface PriceCategory {
@@ -44,4 +44,9 @@ export interface Customization {
     thumbnail?: File;
   };
   registrationInfo: string;
-} 
+}
+
+export interface EventType {
+  id: number;
+  name: string;
+}

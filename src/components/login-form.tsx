@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import {Link, useNavigate} from "react-router-dom";
-import routes from "@/routes.ts";
+import {routes} from "@/routes.ts";
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "@/app/store.ts";
 import {apiService, Credentials} from "@/config/apiServices.ts";
@@ -59,8 +59,13 @@ export function LoginForm({
       console.log("Données soumis :", res);
     try {
       if(res.success) {
+
+        const token = res.data.data.token;
+        const user = res.data.data.userDto as User;
+        console.log(res)
+
         //@ts-ignore
-        dispatch(setUserLogged({user: res.data.data.userDto as User}));
+        dispatch(setUserLogged({user: user, token: token})); // Dispatch action to set user in Redux store
         toast.success("Authentification réussie !")
         navigate(routes.dashboard);
 

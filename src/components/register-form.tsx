@@ -24,7 +24,7 @@ import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/ui/password-input'
 import { PhoneInput } from '@/components/ui/phone-input'
 import {Link, useNavigate} from "react-router-dom";
-import routes from '@/routes'
+import {routes} from '@/routes'
 import {apiService} from "@/config/apiServices.ts";
 import User from "@/app/domain/User.ts";
 import {useDispatch, useSelector} from "react-redux";
@@ -105,7 +105,7 @@ export default function Register() {
     }
 
     return (
-        <div className="flex min-h-[60vh] h-full w-full items-center justify-center px-4">
+        <div className="flex min-h-screen h-full w-full items-center justify-center px-4">
             <Card className="mx-auto max-w-sm">
                 <CardHeader>
                     <CardTitle className="text-2xl">Inscription organisateur</CardTitle>

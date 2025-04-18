@@ -14,7 +14,7 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar"
-import routes from "@/routes"
+import {routes} from "@/routes"
 
 // This is sample data.
 const data = {

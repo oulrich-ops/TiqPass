@@ -9,7 +9,7 @@ import { NavigationMenu, NavigationMenuList, NavigationMenuLink } from "@/compon
 import {Link} from "react-router-dom";
 import { SVGProps } from "react";
 import { JSX } from "react/jsx-runtime";
-import routes from "@/routes.ts";
+import {routes} from "@/routes.ts";
 import {GalleryVerticalEnd} from "lucide-react";
 
 export default function Header() {

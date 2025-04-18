@@ -1,6 +1,6 @@
 import './App.css'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import routes from './routes'; // Import the centralized routes
+import  { routes } from './routes'; // Import the centralized routes
 import LoginPage from "@/app/login/page.tsx";
 import Home from "@/home.tsx"; // User settings
 import Tickets from "@/tickets.tsx";
@@ -12,6 +12,7 @@ import { EventCreationStepper } from "@/components/EventCreationStepper";
 import {useSelector} from "react-redux";
 import {RootState} from "@/app/store.ts";
 import UserBilletteries from "@/app/features/UserBilletteries.tsx";
+import ProtectedRoute from "/utilities/ProtectedRoute.tsx";
 
 function App() {
     const user = useSelector((state: RootState) => state.user.user)
@@ -19,20 +20,18 @@ function App() {
     return (
         <Router>
             <Routes>
-                {/* Routes imported from routes.ts */}
+                {/* Routes publiques */}
                 <Route path={routes.home} element={<Home />} />
                 <Route path={routes.login} element={<LoginPage />} />
                 <Route path={routes.register} element={<Register />} />
-                <Route path={routes.tickets} element={<Tickets />} />
-                <Route path={routes.dashboard} element={<DashboardPage />} />
-                <Route path={routes.eventCreation} element={<EventCreationStepper />} />
-                <Route path={routes.userEvents} element={<UserBilletteries/>} />
 
-                <Route
-                    path={'/tickets/:ticketId'} // Dynamic route for a specific ticket
-                    element={<TicketDetails />}
-                />
-                <Route path={routes.userSettings} element={<UserSettings />} />
+                {/* Routes protégées */}
+                <Route path={routes.tickets} element={<ProtectedRoute><Tickets /></ProtectedRoute>} />
+                <Route path={routes.dashboard} element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+                <Route path={routes.eventCreation} element={<ProtectedRoute><EventCreationStepper /></ProtectedRoute>} />
+                <Route path={routes.userEvents} element={<ProtectedRoute><UserBilletteries /></ProtectedRoute>} />
+                <Route path={routes.userSettings} element={<ProtectedRoute><UserSettings /></ProtectedRoute>} />
+                <Route path={'/tickets/:ticketId'} element={<ProtectedRoute><TicketDetails /></ProtectedRoute>} />
             </Routes>
         </Router>
     );

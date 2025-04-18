@@ -15,7 +15,7 @@ import {
     SidebarProvider,
     SidebarTrigger,
 } from "@/components/ui/sidebar"
-import { useSelector } from "react-redux"
+import {useDispatch, useSelector} from "react-redux"
 import { RootState } from "@/app/store"
 import { FaCircleUser } from "react-icons/fa6"
 import {
@@ -26,6 +26,10 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import {logout} from "@/app/features/user/userSlice.ts";
+import {toast} from "sonner";
+import {useNavigate} from "react-router-dom";
+import {routes} from "@/routes.ts"
 
 interface AppLayoutProps {
     children: ReactNode
@@ -35,6 +39,9 @@ interface AppLayoutProps {
 export default function AppLayout({ children, breadcrumb = [] }: AppLayoutProps) {
     const user = useSelector((state: RootState) => state.user.user)
     const username = user?.username?.split("@")[0] || "Guest"
+    const dispatch = useDispatch();
+    const navigate = useNavigate()
+
 
     return (
         <SidebarProvider>
@@ -80,7 +87,16 @@ export default function AppLayout({ children, breadcrumb = [] }: AppLayoutProps)
                             <DropdownMenuItem>Profil</DropdownMenuItem>
                             <DropdownMenuItem>Facturation</DropdownMenuItem>
                             <DropdownMenuItem>Équipe</DropdownMenuItem>
-                            <DropdownMenuItem>Abonnement</DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={() => {
+                                    alert("ici")
+                                    dispatch(logout()); // Clear user and token from Redux and localStorage
+                                    toast.success("Déconnexion réussie !");
+                                    navigate(routes.login); // Redirect to the login page
+                                }}
+                            >
+                                Se deconnecter
+                            </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </header>

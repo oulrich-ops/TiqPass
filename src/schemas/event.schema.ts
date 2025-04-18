@@ -2,12 +2,14 @@ import * as z from "zod"
 
 export const generalInformationSchema = z.object({
   name: z.string().min(1, "Le nom est requis"),
-  type: z.string().min(1, "Le type est requis"),
+  type: z.string(),
   location: z.string().min(1, "Le lieu est requis"),
   address: z.string().min(1, "L'adresse est requise"),
   durationType: z.enum(["no_duration", "duration", "multiple_days"]),
-  startDate: z.date().optional(),
-  endDate: z.date().optional()
+  startDate: z.union([z.string(), z.date()]),
+  startTime: z.date().optional(),
+    endTime: z.date().optional(),
+  endDate: z.union([z.string(), z.date()]).optional(),
 }).refine((data) => {
   if (data.durationType !== "no_duration") {
     return data.startDate !== undefined

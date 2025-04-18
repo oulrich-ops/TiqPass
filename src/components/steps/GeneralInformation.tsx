@@ -1,11 +1,8 @@
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import { format } from "date-fns"
-import { CalendarIcon } from "lucide-react"
-import { cn } from "@/lib/utils"
 
-import { Button } from "@/components/ui/button"
+
 import {
   Form,
   FormControl,
@@ -16,14 +13,13 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
-import { Calendar } from "@/components/ui/calendar"
 import { generalInformationSchema } from "@/schemas/event.schema"
-import { EventGeneral } from "@/types/EventTypes"
+import {EventGeneral, EventType} from "@/types/EventTypes"
+import {Button} from "@/components/ui/button.tsx";
+import {apiService} from "@/config/apiServices.ts";
+import {toast} from "sonner";
+import {useEffect,useState} from "react";
+import {validators} from "tailwind-merge";
 
 
 interface Props {
@@ -36,9 +32,42 @@ export function GeneralInformation({ data, onUpdate }: Props) {
     resolver: zodResolver(generalInformationSchema),
     defaultValues: data
   })
+const [typesEvent, setTypeEvent] = useState<EventType[]>([])
 
-  function onSubmit(values: z.infer<typeof generalInformationSchema>) {
+    const fetchTypesEvent = async () => {
+        const response = await apiService.getTypeEvents();
+        if (response.success) {
+            setTypeEvent(response.data.data as EventType[]);
+        } else {
+            toast.error("Erreur lors de la récupération des types d'événements");
+        }
+    };
+    useEffect(() => {
+        fetchTypesEvent();
+    },[])
+     async function onSubmit(values: z.infer<typeof generalInformationSchema>) {
+         const data : EventGeneral = {
+            name: values.name,
+            type: typesEvent.find(item => item.id.toString() == values.type),
+            location: values.location,
+            address: values.address,
+            durationType: values.durationType,
+            startDate: values.startDate,
+            startTime: values.startTime,
+            endDate: values.endDate,
+            endTime: values.endTime
+         }
+         console.log("Submitting data", data)
+
+
+         await apiService.createEvent(data).then(async (data) => {
+          if(data.success) {
+              toast.success("Succès")
+          }
+      })
+
     onUpdate(values)
+
   }
 
   return (
@@ -61,19 +90,31 @@ export function GeneralInformation({ data, onUpdate }: Props) {
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="type"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Type d'événement</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Type d'événement" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+                  control={form.control}
+                  name="type"
+                  render={({ field }) => (
+                      <FormItem>
+                          <FormLabel>Type d'événement</FormLabel>
+                          <FormControl>
+                              <select
+                                  {...field}
+                                  className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                              >
+                                  <option value="" disabled>
+                                      Sélectionnez un type
+                                  </option>
+                                  {typesEvent.map((type) => (
+                                      <option key={type.id} value={type.id}>
+                                          {type.name}
+                                      </option>
+                                  ))}
+                              </select>
+                          </FormControl>
+                          <FormMessage />
+                      </FormItem>
+                  )}
+              />
 
             <FormField
               control={form.control}
@@ -150,7 +191,7 @@ export function GeneralInformation({ data, onUpdate }: Props) {
                               <FormItem>
                                   <FormLabel>Date</FormLabel>
                                   <FormControl>
-                                      <Input type="date" {...field} />
+                                      <Input type="date" {...field} value={field.value ? field.value.toString() : undefined}/>
                                   </FormControl>
                                   <FormMessage />
                               </FormItem>
@@ -168,7 +209,7 @@ export function GeneralInformation({ data, onUpdate }: Props) {
                               <FormItem>
                                   <FormLabel>Heure de début</FormLabel>
                                   <FormControl>
-                                      <Input type="time" {...field} />
+                                      <Input type="time" {...field} value={field.value ? field.value.toString() : undefined} />
                                   </FormControl>
                                   <FormMessage />
                               </FormItem>
@@ -181,7 +222,7 @@ export function GeneralInformation({ data, onUpdate }: Props) {
                               <FormItem>
                                   <FormLabel>Heure de fin</FormLabel>
                                   <FormControl>
-                                      <Input type="time" {...field} />
+                                      <Input type="time" {...field} {...field} value={field.value ? field.value.toString() : undefined} />
                                   </FormControl>
                                   <FormMessage />
                               </FormItem>
@@ -200,7 +241,7 @@ export function GeneralInformation({ data, onUpdate }: Props) {
                                   <FormItem>
                                       <FormLabel>Date de début</FormLabel>
                                       <FormControl>
-                                          <Input type="date" {...field} />
+                                          <Input type="date" {...field} value={field.value ? field.value.toString() : undefined}/>
                                       </FormControl>
                                       <FormMessage />
                                   </FormItem>
@@ -213,7 +254,7 @@ export function GeneralInformation({ data, onUpdate }: Props) {
                                   <FormItem>
                                       <FormLabel>Heure de début</FormLabel>
                                       <FormControl>
-                                          <Input type="time" {...field} />
+                                          <Input type="time" {...field} value={field.value ? field.value.toString() : undefined}/>
                                       </FormControl>
                                       <FormMessage />
                                   </FormItem>
@@ -228,7 +269,7 @@ export function GeneralInformation({ data, onUpdate }: Props) {
                                   <FormItem>
                                       <FormLabel>Date de fin</FormLabel>
                                       <FormControl>
-                                          <Input type="date" {...field} />
+                                          <Input type="date" {...field} value={field.value ? field.value.toString() : undefined}/>
                                       </FormControl>
                                       <FormMessage />
                                   </FormItem>
@@ -241,7 +282,7 @@ export function GeneralInformation({ data, onUpdate }: Props) {
                                   <FormItem>
                                       <FormLabel>Heure de fin</FormLabel>
                                       <FormControl>
-                                          <Input type="time" {...field} />
+                                          <Input type="time" {...field} value={field.value ? field.value.toString() : undefined}/>
                                       </FormControl>
                                       <FormMessage />
                                   </FormItem>
@@ -252,7 +293,19 @@ export function GeneralInformation({ data, onUpdate }: Props) {
               )}
           </div>
         </div>
+
+          <div className="flex justify-end mt-6">
+              <Button
+                  variant="outline"
+                  type={"submit"}
+                  className={"bg-green-600 text-white hover:bg-green-700 hover:text-white"}
+              >
+                  Enregistrer
+              </Button>
+
+          </div>
       </form>
+
     </Form>
 
   )

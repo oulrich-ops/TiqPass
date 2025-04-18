@@ -43,7 +43,10 @@ export function EventCreationStepper() {
         return (
           <GeneralInformation
             data={eventData.general}
-            onUpdate={(data) => setEventData({ ...eventData, general: data })}
+            onUpdate={(data) => {
+              alert('General information updated');
+              setEventData({ ...eventData, general: data });
+            }}
           />
         )
       case 1:
