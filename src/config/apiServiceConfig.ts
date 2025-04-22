@@ -47,13 +47,13 @@ export async function apiRequest<T>(
     config?: AxiosRequestConfig
 ): Promise<ApiResponse<T>> {
     try {
-        const response: AxiosResponse<T> = await apiClient({
+        const response: AxiosResponse<ApiResponse<T>> = await apiClient({
             method,
             url,
             data,
             ...config,
         });
-        return { success: true, data: response.data };
+        return { success: true, data: response.data.data };
     } catch (error: any) {
         return {
             success: false,

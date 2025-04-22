@@ -12,7 +12,7 @@ import { EventCreationStepper } from "@/components/EventCreationStepper";
 import {useSelector} from "react-redux";
 import {RootState} from "@/app/store.ts";
 import UserBilletteries from "@/app/features/UserBilletteries.tsx";
-import ProtectedRoute from "/utilities/ProtectedRoute.tsx";
+import ProtectedRoute from "../utilities/ProtectedRoute.tsx";
 
 function App() {
     const user = useSelector((state: RootState) => state.user.user)

@@ -54,17 +54,17 @@ export function LoginForm({
     setLoginError(null);
 
 
-      const res = await apiService.login(data);
+      const res = await apiService.login(data) as any 
 
       console.log("Données soumis :", res);
     try {
       if(res.success) {
 
-        const token = res.data.data.token;
-        const user = res.data.data.userDto as User;
+        const token = res.data.token;
+        const user = res.data.userDto as User;
         console.log(res)
 
-        //@ts-ignore
+        
         dispatch(setUserLogged({user: user, token: token})); // Dispatch action to set user in Redux store
         toast.success("Authentification réussie !")
         navigate(routes.dashboard);

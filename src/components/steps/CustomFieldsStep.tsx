@@ -32,29 +32,35 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { CustomField, PriceCategory } from "@/types/EventTypes"
 import { customFieldSchema } from "@/schemas/event.schema"
+import { apiService } from "@/config/apiServices"
+import { error } from "console"
+import { toast } from "sonner"
 
 const formSchema = z.object({
   fields: z.array(customFieldSchema)
 })
 
+
 const fieldTypes = [
-  { value: "text", label: "Texte" },
-  { value: "number", label: "Nombre" },
-  { value: "email", label: "Email" },
-  { value: "date", label: "Date" },
-  { value: "tel", label: "Téléphone" },
-]
+  { value: "TEXT", label: "Texte" },
+  { value: "NUMBER", label: "Nombre" },
+  { value: "EMAIL", label: "Email" },
+  { value: "DATE", label: "Date" },
+  { value: "TEL", label: "Téléphone" },
+];
 
 interface Props {
   data: CustomField[]
   priceCategories: PriceCategory[]
   onUpdate: (data: CustomField[]) => void
+  ticketting_id: number,
 }
 
-export function CustomFieldsStep({ data, priceCategories, onUpdate }: Props) {
+export function CustomFieldsStep({ data, priceCategories,ticketting_id, onUpdate }: Props) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      //@ts-ignore
       fields: data.length > 0 ? data : []
     }
   })
@@ -65,14 +71,37 @@ export function CustomFieldsStep({ data, priceCategories, onUpdate }: Props) {
   })
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    onUpdate(values.fields)
+    //@ts-ignore
+    const champs: CustomField[] = values.fields.map((item)=>{
+    return {
+      name:item.name,
+      priceCategoryIds: item.priceCategoryIds,
+      required: item.required,
+      type: item.type
+
+
+    }
+  })
+  console.log(champs)
+
+  apiService.addTickettingCustomFields(ticketting_id,champs).then(
+    (res)=>{
+      if(res.success){
+        toast.success("Champs ajoutés avec succès")
+        onUpdate(champs)
+      }
+    }
+  ).catch((error)=> console.log(error))
+
+
+
   }
 
   const addField = () => {
     append({
       id: crypto.randomUUID(),
       name: "",
-      type: "text",
+      type: "TEXT",
       required: false,
       priceCategoryIds: []
     })
@@ -187,7 +216,7 @@ export function CustomFieldsStep({ data, priceCategories, onUpdate }: Props) {
                                 {priceCategories.map(category => (
                                   <div key={category.id} className="flex items-center space-x-2">
                                     <Checkbox
-                                      checked={field.value?.includes(category.id)}
+                                      checked={field.value?.includes(category.id?.toString()??"")}
                                       onCheckedChange={(checked) => {
                                         const updatedIds = checked
                                           ? [...field.value, category.id]
@@ -232,6 +261,16 @@ export function CustomFieldsStep({ data, priceCategories, onUpdate }: Props) {
             </div>
           </CardContent>
         </Card>
+         <div className="flex justify-end mt-6">
+                      <Button
+                          variant="outline"
+                          type={"submit"}
+                          className={"bg-green-600 text-white hover:bg-green-700 hover:text-white"}
+                      >
+                          Enregistrer
+                      </Button>
+        
+                  </div>
       </form>
     </Form>
   )

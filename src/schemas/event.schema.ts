@@ -1,14 +1,15 @@
 import * as z from "zod"
 
 export const generalInformationSchema = z.object({
+  id: z.number().optional(),
   name: z.string().min(1, "Le nom est requis"),
   type: z.string(),
   location: z.string().min(1, "Le lieu est requis"),
   address: z.string().min(1, "L'adresse est requise"),
   durationType: z.enum(["no_duration", "duration", "multiple_days"]),
   startDate: z.union([z.string(), z.date()]),
-  startTime: z.date().optional(),
-    endTime: z.date().optional(),
+  startTime: z.union([z.string(), z.date()]).optional(),
+    endTime: z.union([z.string(), z.date()]).optional(),
   endDate: z.union([z.string(), z.date()]).optional(),
 }).refine((data) => {
   if (data.durationType !== "no_duration") {
@@ -21,19 +22,20 @@ export const generalInformationSchema = z.object({
 })
 
 export const priceCategorySchema = z.object({
-  id: z.string(),
+  id: z.union([z.string(),z.number()]).optional(),
   name: z.string().min(1, "Le nom est requis"),
   price: z.number().min(0, "Le prix doit être positif"),
   description: z.string(),
   totalLimit: z.number().min(0, "La limite doit être positive"),
   hasOrderLimit: z.boolean(),
-  limitPerOrder: z.number().optional()
+  limitPerOrder: z.number().optional(),
+  ticketting_id: z.number(),
 })
 
 export const customFieldSchema = z.object({
   id: z.string(),
   name: z.string().min(1, "Le nom est requis"),
-  type: z.enum(["text", "number", "email", "date", "tel"]),
+  type: z.enum(["TEXT", "NUMBER", "EMAIL", "DATE", "TEL"]),
   required: z.boolean(),
   priceCategoryIds: z.array(z.string())
 })

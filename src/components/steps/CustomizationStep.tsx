@@ -21,21 +21,65 @@ import {
 } from "@/components/ui/card"
 import { customizationSchema } from "@/schemas/event.schema"
 import { Customization } from "@/types/EventTypes"
+import { Button } from "../ui/button"
+import { apiFileService, apiService } from "@/config/apiServices"
+import { toast } from "sonner"
 
 interface Props {
-  data: Customization
+  data: Customization,
+  ticketting_id: number,
   onUpdate: (data: Customization) => void
 }
 
-export function CustomizationStep({ data, onUpdate }: Props) {
+export function CustomizationStep({ data,ticketting_id, onUpdate }: Props) {
   const form = useForm<z.infer<typeof customizationSchema>>({
     resolver: zodResolver(customizationSchema),
+    //@ts-ignore
     defaultValues: data
   })
 
-  function onSubmit(values: z.infer<typeof customizationSchema>) {
-    onUpdate(values)
+  async function onSubmit(values: z.infer<typeof customizationSchema>) {
+    try {
+      
+  
+     
+      const images: { banner?: string; thumbnail?: string } = {};
+  
+      if (values.images.banner instanceof File) {
+        const fileUrl = await apiFileService.uploadFile(values.images.banner);
+        images.banner = fileUrl ; 
+      }
+      
+      if (values.images.thumbnail instanceof File) {
+        const fileUrl = await apiFileService.uploadFile(values.images.thumbnail);
+        images.thumbnail = fileUrl; 
+      }
+  
+      
+      const customization: Customization = {
+        contactInfo: values.contactInfo,
+        description: {
+          longDescription: values.description.long,
+          shortDescription: values.description.short,
+        },
+        images,
+        registrationInfo: values.registrationInfo,
+        theme: values.theme
+      };
+  
+      
+      const res = await apiService.addTickettingCustomization(ticketting_id, customization);
+  
+      if (res.success) {
+        toast.success("Enregistrement avec succès");
+        onUpdate(customization); 
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Une erreur est survenue lors de la soumission");
+    }
   }
+  
 
   return (
     <Form {...form}>
@@ -241,6 +285,16 @@ export function CustomizationStep({ data, onUpdate }: Props) {
             />
           </CardContent>
         </Card>
+         <div className="flex justify-end mt-6">
+                      <Button
+                          variant="outline"
+                          type={"submit"}
+                          className={"bg-green-600 text-white hover:bg-green-700 hover:text-white"}
+                      >
+                          Enregistrer
+                      </Button>
+        
+                  </div>
       </form>
     </Form>
   )

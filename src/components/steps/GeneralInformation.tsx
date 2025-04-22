@@ -19,7 +19,6 @@ import {Button} from "@/components/ui/button.tsx";
 import {apiService} from "@/config/apiServices.ts";
 import {toast} from "sonner";
 import {useEffect,useState} from "react";
-import {validators} from "tailwind-merge";
 
 
 interface Props {
@@ -30,6 +29,7 @@ interface Props {
 export function GeneralInformation({ data, onUpdate }: Props) {
   const form = useForm<z.infer<typeof generalInformationSchema>>({
     resolver: zodResolver(generalInformationSchema),
+    //@ts-ignore
     defaultValues: data
   })
 const [typesEvent, setTypeEvent] = useState<EventType[]>([])
@@ -37,16 +37,17 @@ const [typesEvent, setTypeEvent] = useState<EventType[]>([])
     const fetchTypesEvent = async () => {
         const response = await apiService.getTypeEvents();
         if (response.success) {
-            setTypeEvent(response.data.data as EventType[]);
+            
+            setTypeEvent(response.data as EventType[]);
         } else {
-            toast.error("Erreur lors de la récupération des types d'événements");
+            toast.error("Erreur, veuillez verifiez votre internet");
         }
     };
     useEffect(() => {
         fetchTypesEvent();
     },[])
      async function onSubmit(values: z.infer<typeof generalInformationSchema>) {
-         const data : EventGeneral = {
+         const data_tosave : EventGeneral = {
             name: values.name,
             type: typesEvent.find(item => item.id.toString() == values.type),
             location: values.location,
@@ -57,16 +58,19 @@ const [typesEvent, setTypeEvent] = useState<EventType[]>([])
             endDate: values.endDate,
             endTime: values.endTime
          }
-         console.log("Submitting data", data)
+         
 
 
-         await apiService.createEvent(data).then(async (data) => {
-          if(data.success) {
-              toast.success("Succès")
+         await apiService.createEvent(data).then(async (res) => {
+          if(res.success) {
+            let id_tck = res.data as number
+              toast.success(`Succès, billeterie ${id_tck} crée`)
+              form.setValue("id", id_tck)
+              data_tosave.id = id_tck
           }
       })
 
-    onUpdate(values)
+    onUpdate(data_tosave)
 
   }
 
@@ -76,6 +80,15 @@ const [typesEvent, setTypeEvent] = useState<EventType[]>([])
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <div className="grid grid-cols-2 gap-6">
           <div className="space-y-4">
+
+          <FormField
+  control={form.control}
+  name="id"
+  render={({ field }) => (
+    <input type="hidden" {...field} />
+  )}
+/>
+
             <FormField
               control={form.control}
               name="name"
@@ -202,6 +215,20 @@ const [typesEvent, setTypeEvent] = useState<EventType[]>([])
 
               {form.watch("durationType") === "duration" && (
                   <div className="space-y-4">
+                     <FormField
+                          control={form.control}
+                          name="startDate"
+                          render={({ field }) => (
+                              <FormItem>
+                                  <FormLabel>Date</FormLabel>
+                                  <FormControl>
+                                      <Input type="date" {...field} value={field.value ? field.value.toString() : undefined}/>
+                                  </FormControl>
+                                  <FormMessage />
+                              </FormItem>
+                          )}
+                      />
+                       <div className="grid grid-cols-2 gap-4">
                       <FormField
                           control={form.control}
                           name="startTime"
@@ -227,7 +254,7 @@ const [typesEvent, setTypeEvent] = useState<EventType[]>([])
                                   <FormMessage />
                               </FormItem>
                           )}
-                      />
+                      /></div>
                   </div>
               )}
 

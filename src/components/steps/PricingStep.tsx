@@ -25,17 +25,21 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PriceCategory } from "@/types/EventTypes"
 import { priceCategorySchema } from "@/schemas/event.schema"
+import { apiService } from "@/config/apiServices"
+import { toast } from "sonner"
+import { error } from "console"
 
 const formSchema = z.object({
   categories: z.array(priceCategorySchema)
 })
 
 interface Props {
-  data: PriceCategory[]
+  data: PriceCategory[],
+  ticketting_id: number,
   onUpdate: (data: PriceCategory[]) => void
 }
 
-export function PricingStep({ data, onUpdate }: Props) {
+export function PricingStep({ data,ticketting_id, onUpdate }: Props) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -49,18 +53,43 @@ export function PricingStep({ data, onUpdate }: Props) {
   })
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    onUpdate(values.categories)
+    const categories: PriceCategory[]= values.categories.map((category) => {
+      return {
+          id: category.id,  
+          name: category.name,  
+          description: category.description,
+          hasOrderLimit: category.hasOrderLimit,
+          price: category.price,
+          totalLimit: category.totalLimit,
+          event_id: ticketting_id,
+          limitPerOrder: category.limitPerOrder,
+
+      };
+  }); 
+    
+apiService.addTickettingPriceCategories(ticketting_id,categories).then((res)=>{
+  if(res.success){
+    toast.success("Catégories de prix ajoutées avec succès")
+    onUpdate(categories)
+  }
+}).catch((error)=>{
+  console.log(error);
+  toast.error("Erreur ressayer")
+})
+
+   
   }
 
   const addCategory = () => {
     append({
-      id: crypto.randomUUID(),
+      //id: crypto.randomUUID(),
       name: "",
       price: 0,
       description: "",
       totalLimit: 0,
       hasOrderLimit: false,
-      limitPerOrder: undefined
+      limitPerOrder: undefined,
+      ticketting_id: ticketting_id,
     })
   }
 
@@ -215,6 +244,16 @@ export function PricingStep({ data, onUpdate }: Props) {
             </Button>
           </CardContent>
         </Card>
+         <div className="flex justify-end mt-6">
+                      <Button
+                          variant="outline"
+                          type={"submit"}
+                          className={"bg-green-600 text-white hover:bg-green-700 hover:text-white"}
+                      >
+                          Enregistrer
+                      </Button>
+        
+                  </div>
       </form>
     </Form>
   )

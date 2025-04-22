@@ -32,7 +32,7 @@ import {useNavigate} from "react-router-dom";
 import {routes} from "@/routes.ts"
 
 interface AppLayoutProps {
-    children: ReactNode
+    children?: ReactNode
     breadcrumb?: { label: string; href?: string }[]
 }
 

@@ -8,12 +8,10 @@ const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
     const user = useSelector((state: RootState) => state.user.user);
 
     if (!user) {
-        // Si l'utilisateur n'est pas connecté, on redirige vers la page de login
         // @ts-ignore
         return <Navigate to={routes.login} replace />;
     }
 
-    // Sinon on affiche le contenu protégé
     return children;
 };
 

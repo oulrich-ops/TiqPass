@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { GeneralInformation } from './steps/GeneralInformation'
 import { PricingStep } from './steps/PricingStep'
 import { CustomFieldsStep } from './steps/CustomFieldsStep'
@@ -7,6 +7,7 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { EventGeneral, PriceCategory, CustomField, Customization } from '@/types/EventTypes'
 import AppLayout from '@/app/dashboard/page.tsx'
+import { toast } from 'sonner'
 
 const steps = [
   'Informations générales',
@@ -24,8 +25,22 @@ export function EventCreationStepper() {
     customization: {} as Customization
   })
 
-  const handleNext = () => {
-    setActiveStep((prevStep) => prevStep + 1)
+
+  const handleNext = async () => {
+    let isValid = true
+  
+    if (activeStep === 0 && eventData.general.id == undefined) {
+      isValid = false
+    } else if((activeStep === 1 && eventData.pricing.length == 0) || 
+    (activeStep === 1 && eventData.pricing[0].id==0)) {
+      isValid = false
+    }
+  
+    if (isValid) {
+      setActiveStep((prevStep) => prevStep + 1)
+    } else {
+      toast.warning("Données invalides pour l'étape actuelle")
+    }
   }
 
   const handleBack = () => {
@@ -54,6 +69,7 @@ export function EventCreationStepper() {
           <PricingStep
             data={eventData.pricing}
             onUpdate={(data) => setEventData({ ...eventData, pricing: data })}
+            ticketting_id={eventData.general.id ?? 0}
           />
         )
       case 2:
@@ -62,12 +78,14 @@ export function EventCreationStepper() {
             data={eventData.customFields}
             priceCategories={eventData.pricing}
             onUpdate={(data) => setEventData({ ...eventData, customFields: data })}
+            ticketting_id={eventData.general.id ?? 0}
           />
         )
       case 3:
         return (
           <CustomizationStep
             data={eventData.customization}
+            ticketting_id={eventData.general.id ?? 0}
             onUpdate={(data) => setEventData({ ...eventData, customization: data })}
           />
         )
@@ -119,12 +137,12 @@ export function EventCreationStepper() {
         >
           Précédent
         </Button>
-        <Button
-          variant="outline"
-          onClick={handleSave}
-        >
-          Enregistrer
-        </Button>
+        {/* <Button
+  variant="outline"
+  onClick={handleSave}
+>
+  Enregistrer
+</Button> */}
         <Button
           disabled={activeStep === steps.length - 1}
           onClick={handleNext}
