@@ -1,5 +1,6 @@
 package com.tiqkis.tiqpass.domain.model;
 
+import com.tiqkis.tiqpass.user.model.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -34,11 +35,16 @@ public class Ticketing {
     private EventType eventType;
 
     @ManyToOne
-    private Promoter promoter;
+    private User promoter;
 
     @OneToMany(mappedBy = "ticketing", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PriceCategory> priceCategories;
 
-    @OneToOne
+    @OneToMany(mappedBy = "ticketing", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CustomField> customFields;
+
+
+
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Customization customization;
 }

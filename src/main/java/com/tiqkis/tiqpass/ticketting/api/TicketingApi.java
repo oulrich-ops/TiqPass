@@ -1,6 +1,7 @@
 package com.tiqkis.tiqpass.ticketting.api;
 
 import com.tiqkis.tiqpass.common.ApiResponse;
+import com.tiqkis.tiqpass.domain.model.Customization;
 import com.tiqkis.tiqpass.ticketting.dto.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,10 +27,16 @@ public interface TicketingApi {
 
 
     // Step 3: Add customization and custom fields
-    @PostMapping("/{eventId}/customize")
-    ResponseEntity<ApiResponse<Void>> addCustomizationAndFields(
+    @PostMapping("/{eventId}/customize-fields")
+    ResponseEntity<ApiResponse<Void>> addCustomFields(
             @PathVariable Long eventId,
-            @RequestBody CustomizationAndFieldsRequest request
+            @RequestBody List<CustomFieldRequest> customFields
+    );
+
+    @PostMapping("/{eventId}/customize")
+    ResponseEntity<ApiResponse<Void>> addCustomization(
+            @PathVariable Long eventId,
+            @RequestBody Customization request
     );
 
     // Retrieve all event types
@@ -51,4 +58,6 @@ public interface TicketingApi {
     @DeleteMapping("/{eventId}/delete")
     ResponseEntity<ApiResponse<Void>> deleteTicketingEvent(@PathVariable Long eventId);
 
+    @GetMapping("/my-ticketing-events")
+    ResponseEntity<ApiResponse<List<TicketingResponse>>> getCurrentUserTicketingEvents();
 }

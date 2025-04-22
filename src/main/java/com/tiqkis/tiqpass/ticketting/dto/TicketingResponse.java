@@ -13,4 +13,5 @@ public class TicketingResponse {
     private String durationType;
     private Date startDate;
     private Date endDate;
+    private String bannerUrl ;
 }

@@ -35,6 +35,8 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Sexe sexe;
     private Date dateNaissance;
+    private String identityDoc;
+
 
 
     @Enumerated(EnumType.STRING)

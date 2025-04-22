@@ -19,6 +19,7 @@ public class CustomField {
     @Enumerated(EnumType.STRING)
     private FieldType type; // Enum for field types
 
+    @Column(name = "required", nullable = false)
     private boolean required;
 
     @ManyToOne
@@ -34,6 +35,3 @@ public class CustomField {
     private List<PriceCategory> priceCategories;
 }
 
-enum FieldType {
-    TEXT, NUMBER, EMAIL, DATE, TEL
-}

@@ -1,12 +1,13 @@
 package com.tiqkis.tiqpass.ticketting.controler;
 
 import com.tiqkis.tiqpass.common.ApiResponse;
-import com.tiqkis.tiqpass.common.Config.JwtAuthenticationResponse;
 import com.tiqkis.tiqpass.common.interfaces.ApiResponseUtil;
+import com.tiqkis.tiqpass.domain.model.*;
 import com.tiqkis.tiqpass.ticketting.api.TicketingApi;
 import com.tiqkis.tiqpass.ticketting.dto.*;
-import com.tiqkis.tiqpass.domain.model.EventType;
 import com.tiqkis.tiqpass.ticketting.service.TicketingService;
+import com.tiqkis.tiqpass.user.model.User;
+import com.tiqkis.tiqpass.user.service.IUserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,14 +18,18 @@ import java.util.List;
 public class TicketingController implements TicketingApi {
 
     private final TicketingService ticketingService;
+    private final IUserService userService;
 
-    public TicketingController(TicketingService ticketingService) {
+    public TicketingController(TicketingService ticketingService, IUserService userService) {
         this.ticketingService = ticketingService;
+        this.userService = userService;
     }
 
     @Override
     public ResponseEntity<ApiResponse<Long>> createEventGeneral(EventGeneralRequest request) {
-        Long eventId = ticketingService.createEventGeneral(request);
+        //Get current user
+        User promoter =  userService.getCurrentUser();
+        Long eventId = ticketingService.createEventGeneral(request, promoter);
 
         ApiResponse<Long> response = ApiResponseUtil.buildApiResponse("Evenement creé avec succès !",eventId, HttpStatus.OK.value());
 
@@ -34,6 +39,7 @@ public class TicketingController implements TicketingApi {
 
     @Override
     public ResponseEntity<ApiResponse<Void>> addPriceCategories(Long eventId, List<PriceCategoryRequest> priceCategories) {
+
         ticketingService.addPriceCategories(eventId, priceCategories);
         ApiResponse<Void> response = ApiResponseUtil.buildApiResponse("Price categories added successfully", null, HttpStatus.OK.value());
 
@@ -41,10 +47,20 @@ public class TicketingController implements TicketingApi {
     }
 
     @Override
-    public ResponseEntity<ApiResponse<Void>> addCustomizationAndFields(Long eventId, CustomizationAndFieldsRequest request) {
-        //ticketingService.addCustomizationAndFields(eventId, request);
+    public ResponseEntity<ApiResponse<Void>> addCustomFields(Long eventId, List<CustomFieldRequest> customFields) {
+
+
+        ticketingService.addCustomFields(eventId, customFields);
+
 
         ApiResponse<Void> response = ApiResponseUtil.buildApiResponse("Customization and custom fields added successfully", null, HttpStatus.OK.value());
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<ApiResponse<Void>> addCustomization(Long eventId, Customization request) {
+        ticketingService.addCustomization(eventId, request);
+        ApiResponse<Void> response = ApiResponseUtil.buildApiResponse("Customization added successfully", null, HttpStatus.OK.value());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -86,5 +102,24 @@ public class TicketingController implements TicketingApi {
         ApiResponse <Void> response = ApiResponseUtil.buildApiResponse("Ticketing event deleted successfully", null, HttpStatus.OK.value());
         return new ResponseEntity<>(response, HttpStatus.OK);
 
+    }
+
+    @Override
+    public ResponseEntity<ApiResponse<List<TicketingResponse>>> getCurrentUserTicketingEvents() {
+
+        Long currentUserId = Long.valueOf(userService.getCurrentUser().getId());
+
+        List<TicketingResponse> userTicketingEvents = ticketingService.getTicketingEventsByUserId(currentUserId);
+
+        ApiResponse<List<TicketingResponse>> response = ApiResponseUtil.buildApiResponse(
+                "User's ticketing events retrieved successfully",
+                userTicketingEvents,
+                HttpStatus.OK.value()
+        );
+
+        if (userTicketingEvents.isEmpty()) {
+            return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
