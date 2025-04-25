@@ -16,6 +16,7 @@ import ProtectedRoute from "../utilities/ProtectedRoute.tsx";
 
 function App() {
     const user = useSelector((state: RootState) => state.user.user)
+   
 
     return (
         <Router>
@@ -32,6 +33,7 @@ function App() {
                 <Route path={routes.userEvents} element={<ProtectedRoute><UserBilletteries /></ProtectedRoute>} />
                 <Route path={routes.userSettings} element={<ProtectedRoute><UserSettings /></ProtectedRoute>} />
                 <Route path={'/tickets/:ticketId'} element={<ProtectedRoute><TicketDetails /></ProtectedRoute>} />
+                <Route path={routes.eventEdit(':id')} element={<ProtectedRoute><EventCreationStepper /></ProtectedRoute>} />
             </Routes>
         </Router>
     );
