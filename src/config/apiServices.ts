@@ -2,7 +2,7 @@
 import { apiRoutes } from "./apiRoutes";
 import User from "@/app/domain/User.ts";
 import apiClient, { apiRequest, ApiResponse } from "./apiServiceConfig";
-import {CustomField, Customization, EventGeneral, PriceCategory} from "@/types/EventTypes.ts";
+import {CustomField, Customization, EventGeneral, PriceCategory, WholeEventTicketting} from "@/types/EventTypes.ts";
 import { Billeterie } from "@/app/features/UserBilletteries";
 
 
@@ -61,7 +61,10 @@ export const apiService = {
 
     addTickettingCustomization: (ticketting_id:number, customization:Customization) =>
         apiRequest<void>("POST",apiRoutes.events.addCustomization(ticketting_id),customization),
-};
+
+    getTicketingById: (ticketting_id:number) =>
+        apiRequest<WholeEventTicketting>("GET", apiRoutes.events.getTicketingById(ticketting_id))
+          };
 
 
 export const apiFileService = {

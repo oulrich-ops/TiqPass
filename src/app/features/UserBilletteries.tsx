@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { use, useEffect, useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { format } from "date-fns"
 //@ts-ignore
@@ -6,8 +6,12 @@ import fr from "date-fns/locale/fr"
 import {undefined} from "zod";
 import AppLayout from '@/app/dashboard/page.tsx'
 import { Skeleton } from "@/components/ui/skeleton"
+import { FaEdit, FaTrash, FaGlobe,FaArchive } from "react-icons/fa" 
 
 import { apiService } from "@/config/apiServices";
+import { API_BASE } from "@/Constantes";
+import { routes } from "@/routes";
+import { useNavigate } from "react-router-dom";
 
 export type Billeterie = {
     id: number;
@@ -22,6 +26,8 @@ export type Billeterie = {
 
 
 const UserBilletteries = () => {
+  
+  const navigate = useNavigate();
     const [data, setData] = useState<Billeterie[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
   
@@ -29,9 +35,13 @@ const UserBilletteries = () => {
       try {
         setLoading(true);
         const res = await apiService.getUserTicketting();
+
   
         if (res.success && res.data) {
-          setData(res.data as Billeterie[]);
+          const data = res.data as Billeterie[];
+          console.log("Données des billetteries :", data);
+          setData(data);
+
         } else {
           console.warn("Pas de données retournées");
         }
@@ -45,6 +55,28 @@ const UserBilletteries = () => {
     useEffect(() => {
       fetchBilleteries();
     }, []);
+
+    const handlePublish = (id: number) => {
+      console.log(`Publier billetterie avec ID : ${id}`);
+      // Ajoutez ici la logique pour publier
+    };
+
+    const handleArchive = (id: number) => {
+      console.log(`archiver billetterie avec ID : ${id}`);
+      // Ajoutez ici la logique pour publier
+    };
+
+    const handleEdit = (id: number) => {
+      console.log(`Éditer billetterie avec ID : ${id}`);
+      
+      navigate(routes.eventEdit(id.toString()));
+    };
+
+    const handleDelete = (id: number) => {
+      console.log(`Supprimer billetterie avec ID : ${id}`);
+      // Ajoutez ici la logique pour supprimer
+    };
+
   
     return (
       <AppLayout breadcrumb={[{ label: "Mes billetteries" }]}>
@@ -72,17 +104,54 @@ const UserBilletteries = () => {
             {data.map((b) => (
               <Card key={b.id} className="overflow-hidden shadow-md hover:shadow-lg transition">
                 <img
-                  src={b.bannerUrl}
+
+                  src={`${API_BASE}${b.bannerUrl}`}
                   alt={`Bannière de ${b.name}`}
                   className="w-full h-40 object-cover"
                 />
+                <span>{b.bannerUrl} </span>
                 <CardContent className="p-4 space-y-2">
                   <h3 className="text-lg font-semibold">{b.name}</h3>
                   <p className="text-sm text-muted-foreground">
                     {format(new Date(b.startDate), "EEEE d MMMM yyyy", { locale: fr })}
                   </p>
+                  
                 </CardContent>
-              </Card>
+
+                <div className="flex justify-end  gap-2 p-4">
+                  <button
+                    onClick={() => handlePublish(b.id)}
+                    className="p-2 bg-green-500 text-white rounded-full hover:bg-green-600"
+                    title="Publier"
+                  >
+                    
+                    <FaGlobe />
+                  </button>
+                  <button
+                    onClick={() => handleArchive(b.id)}
+                    className="p-2 bg-yellow-500 text-white rounded-full hover:bg-yellow-600"
+                    title="Arhiver"
+                  >
+                    <FaArchive />
+                  </button>
+
+                  <button
+                    onClick={() => handleEdit(b.id)}
+                    className="p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600"
+                    title="Éditer"
+                  >
+                    <FaEdit />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(b.id)}
+                    className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600"
+                    title="Supprimer"
+                  >
+                    <FaTrash />
+                  </button>
+                </div>
+
+                              </Card>
             ))}
           </div>
         )}

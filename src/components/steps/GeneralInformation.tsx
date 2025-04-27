@@ -19,7 +19,8 @@ import {Button} from "@/components/ui/button.tsx";
 import {apiService} from "@/config/apiServices.ts";
 import {toast} from "sonner";
 import {useEffect,useState} from "react";
-
+import { formatDate } from "../../../utilities/DateUtils.ts";
+import { toastWithDefaults } from "@/Constantes.ts"
 
 interface Props {
   data: EventGeneral
@@ -27,11 +28,28 @@ interface Props {
 }
 
 export function GeneralInformation({ data, onUpdate }: Props) {
+
+
+
   const form = useForm<z.infer<typeof generalInformationSchema>>({
     resolver: zodResolver(generalInformationSchema),
-    //@ts-ignore
-    defaultValues: data
+    
+    defaultValues: {
+      id: data.id,
+      name: data.name,
+      type: data.type?.id.toString() || "",
+      location: data.location,
+      address: data.address,
+      durationType: data.durationType,
+      startDate: formatDate(Number(data.startDate)),
+      startTime: data.startTime,
+      endDate: formatDate(Number(data.endDate)),
+      endTime: data.endTime,
+    },
   })
+
+  
+ 
 const [typesEvent, setTypeEvent] = useState<EventType[]>([])
 
     const fetchTypesEvent = async () => {
@@ -47,7 +65,9 @@ const [typesEvent, setTypeEvent] = useState<EventType[]>([])
         fetchTypesEvent();
     },[])
      async function onSubmit(values: z.infer<typeof generalInformationSchema>) {
+        
          const data_tosave : EventGeneral = {
+            id: values.id,
             name: values.name,
             type: typesEvent.find(item => item.id.toString() == values.type),
             location: values.location,
@@ -56,28 +76,36 @@ const [typesEvent, setTypeEvent] = useState<EventType[]>([])
             startDate: values.startDate,
             startTime: values.startTime,
             endDate: values.endDate,
-            endTime: values.endTime
+            endTime: values.endTime ,
          }
          
 
-
-         await apiService.createEvent(data).then(async (res) => {
+         console.log("data_tosave", data_tosave)
+         await apiService.createEvent(data_tosave).then(async (res) => {
           if(res.success) {
             let id_tck = res.data as number
-              toast.success(`Succès, billeterie ${id_tck} crée`)
+            toastWithDefaults.success(`Succès, billeterie ${id_tck} enregistrée`)
               form.setValue("id", id_tck)
               data_tosave.id = id_tck
+              onUpdate(data_tosave)
           }
       })
 
-    onUpdate(data_tosave)
+    
 
   }
 
   return (
 
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form   onSubmit={form.handleSubmit(
+    (data) => {
+      onSubmit(data);
+    },
+    (errors) => {
+      console.error(" SUBMIT BLOCKED by errors:", errors);
+    }
+  )} className="space-y-8">
         <div className="grid grid-cols-2 gap-6">
           <div className="space-y-4">
 
@@ -114,7 +142,7 @@ const [typesEvent, setTypeEvent] = useState<EventType[]>([])
                                   {...field}
                                   className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                               >
-                                  <option value="" disabled>
+                                  <option value=" ">
                                       Sélectionnez un type
                                   </option>
                                   {typesEvent.map((type) => (
@@ -197,6 +225,7 @@ const [typesEvent, setTypeEvent] = useState<EventType[]>([])
 
               {form.watch("durationType") === "no_duration" && (
                   <div className="space-y-4">
+                                           <div className="grid grid-cols-2 gap-4">
                       <FormField
                           control={form.control}
                           name="startDate"
@@ -210,6 +239,20 @@ const [typesEvent, setTypeEvent] = useState<EventType[]>([])
                               </FormItem>
                           )}
                       />
+                      <FormField
+                          control={form.control}
+                          name="startTime"
+                          render={({ field }) => (
+                              <FormItem>
+                                  <FormLabel>Heure</FormLabel>
+                                  <FormControl>
+                                      <Input type="time" {...field} value={field.value ? field.value.toString() : undefined} />
+                                  </FormControl>
+                                  <FormMessage />
+                              </FormItem>
+                          )}
+                      />
+                      </div>
                   </div>
               )}
 
@@ -324,7 +367,7 @@ const [typesEvent, setTypeEvent] = useState<EventType[]>([])
           <div className="flex justify-end mt-6">
               <Button
                   variant="outline"
-                  type={"submit"}
+                  type="submit"
                   className={"bg-green-600 text-white hover:bg-green-700 hover:text-white"}
               >
                   Enregistrer

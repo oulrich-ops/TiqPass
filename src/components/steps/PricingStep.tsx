@@ -40,6 +40,7 @@ interface Props {
 }
 
 export function PricingStep({ data,ticketting_id, onUpdate }: Props) {
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -95,7 +96,14 @@ apiService.addTickettingPriceCategories(ticketting_id,categories).then((res)=>{
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(
+    (data) => {
+      onSubmit(data);
+    },
+    (errors) => {
+      console.error(" SUBMIT BLOCKED by errors:", errors);
+    }
+  )} className="space-y-8">
         <Card>
           <CardHeader>
             <CardTitle>Catégories de prix</CardTitle>
@@ -206,6 +214,7 @@ apiService.addTickettingPriceCategories(ticketting_id,categories).then((res)=>{
                                   <Input
                                     type="number"
                                     {...field}
+                                    value={field.value ?? ''} 
                                     onChange={e => field.onChange(Number(e.target.value))}
                                     placeholder="Limite par commande"
                                   />

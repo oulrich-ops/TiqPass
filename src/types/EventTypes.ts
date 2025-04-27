@@ -7,18 +7,18 @@ export interface EventGeneral {
   durationType: 'no_duration' | 'duration' | 'multiple_days';
   startTime?: Date | string
   startDate?: Date | string;
-  endTime?: Date | string;
-  endDate?: Date | string;
+  endTime?: Date | string | null;
+  endDate?: Date | string | null;
 }
 
 export interface PriceCategory {
-  id?: number | string;
+  id?: number | string ;
   event_id?: number;
   name: string;
   price: number;
   description: string;
   totalLimit: number;
-  limitPerOrder?: number;
+  limitPerOrder?: number|null;
   hasOrderLimit: boolean;
 
 }
@@ -56,3 +56,10 @@ export interface EventType {
   id: number;
   name: string;
 }
+
+export interface WholeEventTicketting{
+            eventGeneral: EventGeneral;
+            priceCategory: PriceCategory[];
+            customField: CustomField[];
+            customization: Customization;
+          }

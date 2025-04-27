@@ -14,6 +14,7 @@ export const routes = {
   userSettings: '/user-settings',
   not_found: '/404',
   eventCreation: '/event-creation',
+  eventEdit: (id: string) => `/event-edit/${id}`,
   userEvents:  `/events`,
   userEventDetails: (userId: string, eventId: string) => `/users/${userId}/events/${eventId}`,
 };

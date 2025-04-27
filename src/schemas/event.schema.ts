@@ -9,8 +9,8 @@ export const generalInformationSchema = z.object({
   durationType: z.enum(["no_duration", "duration", "multiple_days"]),
   startDate: z.union([z.string(), z.date()]),
   startTime: z.union([z.string(), z.date()]).optional(),
-    endTime: z.union([z.string(), z.date()]).optional(),
-  endDate: z.union([z.string(), z.date()]).optional(),
+    endTime: z.union([z.string(), z.date()]).nullable().optional(),
+  endDate: z.union([z.string(), z.date()]).nullable().optional(),
 }).refine((data) => {
   if (data.durationType !== "no_duration") {
     return data.startDate !== undefined
@@ -28,7 +28,7 @@ export const priceCategorySchema = z.object({
   description: z.string(),
   totalLimit: z.number().min(0, "La limite doit être positive"),
   hasOrderLimit: z.boolean(),
-  limitPerOrder: z.number().optional(),
+  limitPerOrder: z.number().nullable().optional(),
   ticketting_id: z.number(),
 })
 

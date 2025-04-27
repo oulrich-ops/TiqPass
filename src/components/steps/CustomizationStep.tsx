@@ -47,12 +47,15 @@ export function CustomizationStep({ data,ticketting_id, onUpdate }: Props) {
   
       if (values.images.banner instanceof File) {
         const fileUrl = await apiFileService.uploadFile(values.images.banner);
+        alert(fileUrl)
         images.banner = fileUrl ; 
       }
       
       if (values.images.thumbnail instanceof File) {
         const fileUrl = await apiFileService.uploadFile(values.images.thumbnail);
         images.thumbnail = fileUrl; 
+        alert(fileUrl)
+
       }
   
       
@@ -196,67 +199,67 @@ export function CustomizationStep({ data,ticketting_id, onUpdate }: Props) {
             />
 
             <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="images.banner"
-                render={({ field: { value, onChange, ...field } }) => (
-                  <FormItem>
-                    <FormLabel>Bannière (920x250)</FormLabel>
-                    <FormControl>
-                      <div className="flex items-center gap-4">
-                        <Input
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => {
-                            const file = e.target.files?.[0]
-                            if (file) onChange(file)
-                          }}
-                          {...field}
-                        />
-                        {value && (
-                          <img
-                            src={URL.createObjectURL(value)}
-                            alt="Bannière"
-                            className="h-20 w-auto object-cover"
-                          />
-                        )}
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <FormField
+  control={form.control}
+  name="images.banner"
+  render={({ field: { value, onChange, ...field } }) => (
+    <FormItem>
+      <FormLabel>Bannière (920x250)</FormLabel>
+      <FormControl>
+        <div className="flex items-center gap-4">
+          <Input
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) onChange(file);
+            }}
+            {...field}
+          />
+          {value && !(value instanceof File) && (
+            <img
+              src={value}
+              alt="Bannière"
+              className="h-20 w-auto object-cover"
+            />
+          )}
+        </div>
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
 
-              <FormField
-                control={form.control}
-                name="images.thumbnail"
-                render={({ field: { value, onChange, ...field } }) => (
-                  <FormItem>
-                    <FormLabel>Vignette</FormLabel>
-                    <FormControl>
-                      <div className="flex items-center gap-4">
-                        <Input
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => {
-                            const file = e.target.files?.[0]
-                            if (file) onChange(file)
-                          }}
-                          {...field}
-                        />
-                        {value && (
-                          <img
-                            src={URL.createObjectURL(value)}
-                            alt="Vignette"
-                            className="h-20 w-20 object-cover"
-                          />
-                        )}
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+<FormField
+  control={form.control}
+  name="images.thumbnail"
+  render={({ field: { value, onChange, ...field } }) => (
+    <FormItem>
+      <FormLabel>Vignette</FormLabel>
+      <FormControl>
+        <div className="flex items-center gap-4">
+          <Input
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) onChange(file);
+            }}
+            {...field}
+          />
+          {value && !(value instanceof File) && (
+            <img
+              src={value}
+              alt="Vignette"
+              className="h-20 w-20 object-cover"
+            />
+          )}
+        </div>
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
             </div>
           </CardContent>
         </Card>

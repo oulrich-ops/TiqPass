@@ -16,6 +16,7 @@ export const apiRoutes = {
         list: `/ticketing/my-ticketing-events`,
         details: (eventId: string) => `/events/${eventId}`,
         eventType: `/ticketing/event-types`,
+        getTicketingById: (ticketting_id: number) => `/ticketing/${ticketting_id}`,
         
     },
     userEvents: {
