@@ -17,6 +17,8 @@ export const routes = {
   eventEdit: (id: string) => `/event-edit/${id}`,
   userEvents:  `/events`,
   userEventDetails: (userId: string, eventId: string) => `/users/${userId}/events/${eventId}`,
+  ticketingPublicPath: '/ticketting/:slug/:id/p',
+  ticketingPublicView: (slug: string, id: string) => `/ticketting/${slug}/${id}/p`,
 };
 
 
@@ -25,7 +27,7 @@ export const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
   const token = useSelector((state: RootState) => state.user.token);
   const navigate = useNavigate();
 
-  // Redirect to login if not authenticated
+
   if (!token) {
     navigate(routes.login);
   }
@@ -37,7 +39,6 @@ export const GuestRoute = ({ children }: { children: JSX.Element }) => {
   const token = useSelector((state: RootState) => state.user.token);
   const navigate = useNavigate();
 
-  // Redirect to dashboard if authenticated
   if (token) {
     navigate(routes.dashboard)
   }
@@ -45,4 +46,3 @@ export const GuestRoute = ({ children }: { children: JSX.Element }) => {
   return children;
 };
 
-//export default routes;

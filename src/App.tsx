@@ -13,6 +13,8 @@ import {useSelector} from "react-redux";
 import {RootState} from "@/app/store.ts";
 import UserBilletteries from "@/app/features/UserBilletteries.tsx";
 import ProtectedRoute from "../utilities/ProtectedRoute.tsx";
+import TicketingPublicView from './app/features/billeteriepublique/TicketingPublicView.tsx';
+import NotFound from './components/ui/notfound.tsx';
 
 function App() {
     const user = useSelector((state: RootState) => state.user.user)
@@ -21,12 +23,15 @@ function App() {
     return (
         <Router>
             <Routes>
-                {/* Routes publiques */}
+                 
+                <Route path="*" element={<NotFound />} />
                 <Route path={routes.home} element={<Home />} />
                 <Route path={routes.login} element={<LoginPage />} />
                 <Route path={routes.register} element={<Register />} />
+                <Route path={routes.ticketingPublicPath} element={<TicketingPublicView />} />     
 
-                {/* Routes protégées */}
+
+                 
                 <Route path={routes.tickets} element={<ProtectedRoute><Tickets /></ProtectedRoute>} />
                 <Route path={routes.dashboard} element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
                 <Route path={routes.eventCreation} element={<ProtectedRoute><EventCreationStepper /></ProtectedRoute>} />

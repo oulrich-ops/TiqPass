@@ -6,10 +6,10 @@ import fr from "date-fns/locale/fr"
 import {undefined} from "zod";
 import AppLayout from '@/app/dashboard/page.tsx'
 import { Skeleton } from "@/components/ui/skeleton"
-import { FaEdit, FaTrash, FaGlobe,FaArchive } from "react-icons/fa" 
+import { FaEdit, FaTrash, FaGlobe,FaArchive, FaEye } from "react-icons/fa" 
 
 import { apiService } from "@/config/apiServices";
-import { API_BASE } from "@/Constantes";
+import { API_BASE, toastWithDefaults } from "@/Constantes";
 import { routes } from "@/routes";
 import { useNavigate } from "react-router-dom";
 
@@ -22,9 +22,11 @@ export type Billeterie = {
   startDate: string; // ou Date
   endDate: string;   // ou Date
   bannerUrl: string;
+  isPublished: boolean;
 }
 
-
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
+const defaultbanner = import.meta.env.VITE_DEFAULT_BANNER
 const UserBilletteries = () => {
   
   const navigate = useNavigate();
@@ -56,14 +58,34 @@ const UserBilletteries = () => {
       fetchBilleteries();
     }, []);
 
-    const handlePublish = (id: number) => {
-      console.log(`Publier billetterie avec ID : ${id}`);
-      // Ajoutez ici la logique pour publier
+    const handlePublish = async (id: number) => {
+      try {
+        await apiService.updateIsPublished(id, true); // Appel API pour publier
+        toastWithDefaults.success("Billetterie publiée avec succès !");
+        setData((prevData) =>
+          prevData.map((b) =>
+            b.id === id ? { ...b, isPublished: true } : b
+          )
+        );
+      } catch (error) {
+        console.error("Erreur lors de la publication :", error);
+        toastWithDefaults.error("Une erreur est survenue lors de la publication.");
+      }
     };
 
-    const handleArchive = (id: number) => {
-      console.log(`archiver billetterie avec ID : ${id}`);
-      // Ajoutez ici la logique pour publier
+    const handleArchive = async (id: number) => {
+      try {
+        await apiService.updateIsPublished(id, false); 
+        toastWithDefaults.success("Billetterie archivée avec succès !");
+        setData((prevData) =>
+          prevData.map((b) =>
+            b.id === id ? { ...b, isPublished: false } : b
+          )
+        );
+      } catch (error) {
+        console.error("Erreur lors de l'archivage :", error);
+        toastWithDefaults.error("Une erreur est survenue lors de l'archivage.");
+      }
     };
 
     const handleEdit = (id: number) => {
@@ -76,6 +98,13 @@ const UserBilletteries = () => {
       console.log(`Supprimer billetterie avec ID : ${id}`);
       // Ajoutez ici la logique pour supprimer
     };
+
+    const handleView = (name: string, id: number) => {
+  const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); 
+  const url = routes.ticketingPublicView(slug, id.toString()); 
+  console.log(`Visualiser billetterie avec URL : ${url}`);
+  navigate(url); 
+};    
 
   
     return (
@@ -105,11 +134,11 @@ const UserBilletteries = () => {
               <Card key={b.id} className="overflow-hidden shadow-md hover:shadow-lg transition">
                 <img
 
-                  src={`${API_BASE}${b.bannerUrl}`}
+                  src={b.bannerUrl ? `${API_BASE_URL}${b.bannerUrl}` : defaultbanner}
                   alt={`Bannière de ${b.name}`}
                   className="w-full h-40 object-cover"
                 />
-                <span>{b.bannerUrl} </span>
+                
                 <CardContent className="p-4 space-y-2">
                   <h3 className="text-lg font-semibold">{b.name}</h3>
                   <p className="text-sm text-muted-foreground">
@@ -119,21 +148,37 @@ const UserBilletteries = () => {
                 </CardContent>
 
                 <div className="flex justify-end  gap-2 p-4">
-                  <button
-                    onClick={() => handlePublish(b.id)}
-                    className="p-2 bg-green-500 text-white rounded-full hover:bg-green-600"
-                    title="Publier"
-                  >
-                    
-                    <FaGlobe />
-                  </button>
-                  <button
-                    onClick={() => handleArchive(b.id)}
-                    className="p-2 bg-yellow-500 text-white rounded-full hover:bg-yellow-600"
-                    title="Arhiver"
-                  >
-                    <FaArchive />
-                  </button>
+                <button
+    onClick={() => handleView(b.name, b.id)}
+    className="p-2 bg-purple-500 text-white rounded-full hover:bg-purple-600"
+    title="Visualiser"
+  >
+    <FaEye />
+  </button>
+                <button
+    onClick={() => handlePublish(b.id)}
+    className={`p-2 rounded-full text-white ${
+      b.isPublished
+        ? "bg-gray-400 cursor-not-allowed"
+        : "bg-green-500 hover:bg-green-600"
+    }`}
+    title="Publier"
+    disabled={b.isPublished} // Désactive le bouton si isPublished est true
+  >
+    <FaGlobe />
+  </button>
+  <button
+    onClick={() => handleArchive(b.id)}
+    className={`p-2 rounded-full text-white ${
+      !b.isPublished
+        ? "bg-gray-400 cursor-not-allowed"
+        : "bg-yellow-500 hover:bg-yellow-600"
+    }`}
+    title="Archiver"
+    disabled={!b.isPublished} // Désactive le bouton si isPublished est false
+  >
+    <FaArchive />
+  </button>
 
                   <button
                     onClick={() => handleEdit(b.id)}

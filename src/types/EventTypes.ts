@@ -9,6 +9,8 @@ export interface EventGeneral {
   startDate?: Date | string;
   endTime?: Date | string | null;
   endDate?: Date | string | null;
+  isPublished?: boolean; 
+
 }
 
 export interface PriceCategory {

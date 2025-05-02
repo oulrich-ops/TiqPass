@@ -63,7 +63,11 @@ export const apiService = {
         apiRequest<void>("POST",apiRoutes.events.addCustomization(ticketting_id),customization),
 
     getTicketingById: (ticketting_id:number) =>
-        apiRequest<WholeEventTicketting>("GET", apiRoutes.events.getTicketingById(ticketting_id))
+        apiRequest<WholeEventTicketting>("GET", apiRoutes.events.getTicketingById(ticketting_id)),
+
+    updateIsPublished: (eventId: number, isPublished: boolean) =>
+        apiRequest<void>("PUT", apiRoutes.events.updateIsPublished(eventId, isPublished)),
+    
           };
 
 
