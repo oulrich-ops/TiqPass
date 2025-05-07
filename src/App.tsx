@@ -15,6 +15,8 @@ import UserBilletteries from "@/app/features/UserBilletteries.tsx";
 import ProtectedRoute from "../utilities/ProtectedRoute.tsx";
 import TicketingPublicView from './app/features/billeteriepublique/TicketingPublicView.tsx';
 import NotFound from './components/ui/notfound.tsx';
+import PaymentFailure from './components/payment/failure.tsx';
+import PaymentSuccess from './components/payment/success.tsx';
 
 function App() {
     const user = useSelector((state: RootState) => state.user.user)
@@ -30,6 +32,8 @@ function App() {
                 <Route path={routes.register} element={<Register />} />
                 <Route path={routes.ticketingPublicPath} element={<TicketingPublicView />} />     
 
+                <Route path={routes.paymentfail} element={<PaymentFailure />} />
+                <Route path={routes.paymentSuccess} element={<PaymentSuccess />} />
 
                  
                 <Route path={routes.tickets} element={<ProtectedRoute><Tickets /></ProtectedRoute>} />
@@ -39,6 +43,7 @@ function App() {
                 <Route path={routes.userSettings} element={<ProtectedRoute><UserSettings /></ProtectedRoute>} />
                 <Route path={'/tickets/:ticketId'} element={<ProtectedRoute><TicketDetails /></ProtectedRoute>} />
                 <Route path={routes.eventEdit(':id')} element={<ProtectedRoute><EventCreationStepper /></ProtectedRoute>} />
+
             </Routes>
         </Router>
     );

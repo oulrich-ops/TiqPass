@@ -8,20 +8,54 @@ import { useEffect, useState } from 'react';
 import { WholeEventTicketting } from '@/types/EventTypes';
 import { apiService } from '@/config/apiServices';
 import { Skeleton } from '@/components/ui/skeleton';
+import CartSummary from './CartSummary';
+import OrderSummary from '../orderPayment/orderSummary';
+import Checkout from '../orderPayment/checkout';
 
+
+export type SelectedTicket = {
+  categoryId: number;
+  categoryName: string;
+  quantity: number;
+  price: number;
+};
 
 const TicketingPublicView = () => {
 
   const { id, slug } = useParams<{ id: string; slug: string }>();
+  
 
   const [data, setData] = useState<WholeEventTicketting | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const primaryColor = data?.customization.theme.primaryColor || "#3B82F6";
+  const primaryColor = data?.customization?.theme.primaryColor || "#3B82F6";
   const [showSummary, setShowSummary] = useState<boolean>(false);
+  const [quantities, setQuantities] = useState<{ [key: string]: number }>({});
+  const [selectedTickets, setSelectedTickets] = useState<SelectedTicket[]>([]);
+  const [showCartSummary, setShowCartSummary] = useState<boolean>(false);
+  const total = selectedTickets.reduce(
+    (sum, ticket) => sum + ticket.quantity * ticket.price,
+    0
+  );
 
+  
 
-
-
+  useEffect(() => {
+    const updatedTickets: SelectedTicket[] = [];
+  
+    data?.priceCategory.forEach((cat) => {
+      const quantity = quantities[cat.id!.toString()] || 0;
+      if (quantity > 0) {
+        updatedTickets.push({
+          categoryId: Number(cat.id!),
+          categoryName: cat.name,
+          quantity,
+          price: cat.price,
+        });
+      }
+    });
+  
+    setSelectedTickets(updatedTickets);
+  }, [quantities, data?.priceCategory]);
 
   useEffect(() => {
     const fetchEventData = async () => {
@@ -44,6 +78,8 @@ const TicketingPublicView = () => {
 
     fetchEventData();
   }, [id]);
+
+ 
 
   if (loading) {
     return (
@@ -87,7 +123,7 @@ const TicketingPublicView = () => {
 
   return (
     <div  className="font-sans"
-    style={{ ['--primary-color' as any]: data?.customization.theme.primaryColor }}
+    style={{ ['--primary-color' as any]: data?.customization?.theme?.primaryColor }}
   >
       <HeroBanner event={data?.eventGeneral} customization={data?.customization} 
       primaryColor={primaryColor}/>
@@ -101,8 +137,12 @@ const TicketingPublicView = () => {
         priceCategories={}
         customFields={}
       /> */}
-
-<div id="tickets" className="mb-12 scroll-mt-6">
+{showCartSummary ? (
+  <Checkout tickets={selectedTickets} total={total} 
+  onback={()=> setShowCartSummary(false)}/>
+) : (
+      <>
+      <div id="tickets" className="mb-12 scroll-mt-6">
           <h2 className="text-2xl font-bold mb-4 text-center" /*style={{ color: primaryColor }}*/>
             Sélectionnez vos billets
           </h2>
@@ -111,6 +151,9 @@ const TicketingPublicView = () => {
               <TicketSelector 
                 priceCategories={data.priceCategory} 
                 customFields={data.customField}
+                quantities={quantities}
+                setQuantities={setQuantities}
+
               />
             </div>
           </div>
@@ -123,10 +166,10 @@ const TicketingPublicView = () => {
           </h2>
           <div className="bg-white rounded-xl shadow-md overflow-hidden">
             <div className="p-6">
-              <p className="text-xl font-medium mb-4">{data.customization.description.shortDescription || ""}</p>
+              <p className="text-xl font-medium mb-4">{data.customization?.description?.shortDescription || ""}</p>
               <div 
                 className="prose max-w-none"
-                dangerouslySetInnerHTML={{ __html: data.customization.description.longDescription || "" }}
+                dangerouslySetInnerHTML={{ __html: data.customization?.description?.longDescription || "" }}
               />
             </div>
           </div>
@@ -142,7 +185,7 @@ const TicketingPublicView = () => {
             <div className="p-6">
               <div 
                 className="prose max-w-none"
-                dangerouslySetInnerHTML={{ __html: data.customization.registrationInfo || "" }}
+                dangerouslySetInnerHTML={{ __html: data.customization?.registrationInfo || "" }}
               />
             </div>
           </div>
@@ -154,7 +197,11 @@ const TicketingPublicView = () => {
     <h3 className="font-bold text-lg mb-12" >
       Récapitulatif
     </h3>
-    <CheckoutSummary primaryColor={primaryColor} />
+    <CheckoutSummary 
+    primaryColor={primaryColor}
+    selectedTickets={selectedTickets} 
+    onProceed={() => setShowCartSummary(true)}
+    />
   </div>
 </div>
 
@@ -186,12 +233,27 @@ const TicketingPublicView = () => {
                 </button>
               </div>
               <div className="p-4">
-                <CheckoutSummary primaryColor={primaryColor} />
+                <CheckoutSummary 
+                primaryColor={primaryColor}
+                selectedTickets={selectedTickets} 
+                onProceed={() => setShowCartSummary(true)}/>
+                
               </div>
             </div>
           </div>
         )}
+  <button  style={{
+    backgroundColor: total < 1 ? '#cccccc' : primaryColor,
+    opacity: total < 1 ? 0.6 : 1
+  }} className="text-white py-2 px-4 rounded align-center w-full "
+                onClick={() => setShowCartSummary(true)} 
+                disabled={total < 1}>
+          Finaliser 
+        </button>
+        </>
+      )}
         </div>
+
 
     <footer className="bg-gray-800 text-white py-8">
         <div className="max-w-6xl mx-auto px-4">

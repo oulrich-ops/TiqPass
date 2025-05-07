@@ -22,6 +22,10 @@ export const apiRoutes = {
         
         
     },
+    payment: {
+        createSession: `/payment/create-checkout-session`
+    },
+    
     userEvents: {
         list: (userId: string) => `/users/${userId}/events`,
         details: (userId: string, eventId: string) => `/users/${userId}/events/${eventId}`,

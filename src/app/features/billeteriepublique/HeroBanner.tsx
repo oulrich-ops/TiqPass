@@ -5,12 +5,14 @@ interface Props {
   event: EventGeneral;
   customization: Customization;
 }
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
+const defaultbanner = import.meta.env.VITE_DEFAULT_BANNER
 
 export default function HeroBanner({ event, customization,primaryColor }: Props) {
     return (
       <div className="relative h-96">
         <img
-          src={customization.images.banner || '/default-banner.jpg'}
+          src={customization?.images ? `${API_BASE_URL}${customization.images.banner}` : defaultbanner}
           alt={event.name}
           className="w-full h-full object-cover"
         />

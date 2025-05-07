@@ -4,6 +4,8 @@ import User from "@/app/domain/User.ts";
 import apiClient, { apiRequest, ApiResponse } from "./apiServiceConfig";
 import {CustomField, Customization, EventGeneral, PriceCategory, WholeEventTicketting} from "@/types/EventTypes.ts";
 import { Billeterie } from "@/app/features/UserBilletteries";
+import { SelectedTicket } from "@/app/features/billeteriepublique/TicketingPublicView";
+import { PurchaseInterface } from "@/types/PaymentType";
 
 
 
@@ -87,3 +89,12 @@ export const apiFileService = {
     }
     
     }
+
+
+
+export const apiPaymentService = {
+    createCheckoutSession: (purchase:PurchaseInterface) => 
+        apiRequest<{ sessionId: string }>("POST", apiRoutes.payment.createSession,purchase),
+       
+
+}

@@ -1,18 +1,20 @@
 import { CustomField, PriceCategory } from "@/types/EventTypes";
 import { useState } from "react";
 
-export default function TicketSelector({
-    priceCategories,
-    customFields,
-  }: {
-    priceCategories: PriceCategory[] | undefined;
-    customFields: CustomField[];
-  }) {
-    const [quantities, setQuantities] = useState<Record<string, number>>({});
+type Props = {
+  priceCategories: PriceCategory[];
+  customFields: any[];
+  quantities: { [key: string]: number };
+  setQuantities: React.Dispatch<React.SetStateAction<{ [key: string]: number }>>;
+
+};
+
+ const TicketSelector:React.FC<Props>  = ({customFields,priceCategories,quantities, setQuantities })=> {
+  
     const [formValues, setFormValues] = useState<Record<string, any>>({});
   
     const handleChange = (id: string, delta: number) => {
-      setQuantities(prev => {
+      setQuantities((prev) => {
         const newVal = Math.max(0, (prev[id] || 0) + delta);
         return { ...prev, [id]: newVal };
       });
@@ -35,7 +37,7 @@ export default function TicketSelector({
                 <div>
                   <p className="font-semibold">{cat.name}</p>
                   <p className="text-sm text-gray-600">{cat.description}</p>
-                  <p className="text-lg font-bold">{cat.price} FCFA</p>
+                  <p className="text-lg font-bold">{cat.price} €</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <button onClick={() => handleChange(cat.id!.toString(), -1)} style={{ color: 'var(--primary-color)' }}>-</button>
@@ -68,3 +70,4 @@ export default function TicketSelector({
     );
   }
   
+  export default TicketSelector;

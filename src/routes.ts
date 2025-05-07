@@ -19,6 +19,8 @@ export const routes = {
   userEventDetails: (userId: string, eventId: string) => `/users/${userId}/events/${eventId}`,
   ticketingPublicPath: '/ticketting/:slug/:id/p',
   ticketingPublicView: (slug: string, id: string) => `/ticketting/${slug}/${id}/p`,
+  paymentfail: '/payment/failure',
+  paymentSuccess: '/payment/success',
 };
 
 
