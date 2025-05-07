@@ -20,11 +20,12 @@ public class Payment {
 
     @ManyToOne(optional = false)
     private Payer payer;
+    private String stripeSessionId;
 
     private BigDecimal amount;
     private String currency;
     private String paymentMethod;
     private String status;
     private String paymentReference;
-    private LocalDateTime paymentDate = LocalDateTime.now();
+    private LocalDateTime datePaiement = LocalDateTime.now();
 }

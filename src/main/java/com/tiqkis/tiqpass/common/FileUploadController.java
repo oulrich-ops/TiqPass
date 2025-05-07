@@ -1,7 +1,9 @@
 package com.tiqkis.tiqpass.common;
 
 
+import com.tiqkis.tiqpass.common.interfaces.ApiResponseUtil;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -27,23 +29,33 @@ public class FileUploadController {
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<ApiResponse<String>> uploadFile(@RequestParam("file") MultipartFile file) {
         try {
-
             String originalFilename = StringUtils.cleanPath(file.getOriginalFilename());
 
             String newFileName = UUID.randomUUID() + "_" + originalFilename;
+
+            Path uploadDir = Paths.get("src/main/resources/uploads/images");
+            if (!Files.exists(uploadDir)) {
+                Files.createDirectories(uploadDir);
+            }
 
             Path destinationPath = uploadDir.resolve(newFileName);
 
             Files.copy(file.getInputStream(), destinationPath, StandardCopyOption.REPLACE_EXISTING);
 
             String fileUrl = "/uploads/images/" + newFileName;
-            return ResponseEntity.ok(fileUrl);
+
+            System.out.println("File uploaded to: " + fileUrl);
+            ApiResponse<String> response = ApiResponseUtil.buildApiResponse("file upload with success", fileUrl, HttpStatus.OK.value());
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
 
         } catch (IOException e) {
             e.printStackTrace();
-            return ResponseEntity.internalServerError().body("Erreur lors de l'upload");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponseUtil.buildApiResponse("file upload failed", null, HttpStatus.INTERNAL_SERVER_ERROR.value()));
         }
     }
+
 }

@@ -1,5 +1,7 @@
 package com.tiqkis.tiqpass.ticketting.controler;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tiqkis.tiqpass.common.ApiResponse;
 import com.tiqkis.tiqpass.common.interfaces.ApiResponseUtil;
 import com.tiqkis.tiqpass.domain.model.*;
@@ -120,6 +122,23 @@ public class TicketingController implements TicketingApi {
         if (userTicketingEvents.isEmpty()) {
             return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
         }
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<ApiResponse<WholeTicketingResponse>> getTicketingEventById(Long id) {
+        WholeTicketingResponse wticketing = ticketingService.getTicketingEventById(id);
+
+        ApiResponse<WholeTicketingResponse> response = ApiResponseUtil.buildApiResponse("Ticketing event retrieved successfully", wticketing, HttpStatus.OK.value());
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<ApiResponse<Void>> updateIsPublished(Long eventId, boolean isPublished) {
+        ticketingService.updateIsPublished(eventId, isPublished);
+        ApiResponse<Void> response = ApiResponseUtil.buildApiResponse(
+                "Event publication status updated successfully", null, HttpStatus.OK.value()
+        );
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

@@ -44,6 +44,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/customer/**").hasRole("CUSTOMER")
                         .requestMatchers("/agent/**").hasRole("TICKET_AGENT")
+                        .requestMatchers("/images/**", "/uploads/**").permitAll()
                         .dispatcherTypeMatchers(DispatcherType.ERROR).authenticated()
                         .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))

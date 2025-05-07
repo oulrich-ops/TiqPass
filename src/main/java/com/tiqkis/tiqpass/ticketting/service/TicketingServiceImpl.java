@@ -11,6 +11,8 @@ import com.tiqkis.tiqpass.ticketting.service.TicketingService;
 import com.tiqkis.tiqpass.user.model.User;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,17 +32,28 @@ public  class TicketingServiceImpl implements TicketingService {
 
     @Override
     public Long createEventGeneral(EventGeneralRequest request, User user) {
-        Ticketing event = new Ticketing();
-        event.setPromoter(user);
-        event.setName(request.getName());
-        event.setEventType(request.getType());
-        event.setLocation(request.getLocation());
-        event.setAddress(request.getAddress());
-        event.setDurationType(request.getDurationType());
-        event.setStartDate(DateUtils.convertToLocalDate(request.getStartDate()));
-        event.setEndDate(DateUtils.convertToLocalDate(request.getEndDate()!=null ? request.getEndDate() : request.getStartDate()));
+        try{
+            Ticketing event = new Ticketing();
+            if(request.getId()!=null)
+                event.setId(Long.valueOf(request.getId()));
+            event.setPromoter(user);
+            event.setName(request.getName());
+            event.setEventType(request.getType());
+            event.setLocation(request.getLocation());
+            event.setAddress(request.getAddress());
+            event.setDurationType(request.getDurationType());
+            event.setStartDate(DateUtils.convertToLocalDate(request.getStartDate()));
+            event.setEndDate(DateUtils.convertToLocalDate(request.getEndDate()!=null ? request.getEndDate() : request.getStartDate()));
+            event.setStartTime(LocalTime.parse(request.getStartTime()));
+            if(request.getEndTime()!=null)
+                event.setEndTime(LocalTime.parse(request.getEndTime()));
+
         ticketingRepository.save(event);
         return event.getId();
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new RuntimeException("Error creating event: " + e.getMessage());
+        }
     }
 
     @Override
@@ -125,6 +138,7 @@ public  class TicketingServiceImpl implements TicketingService {
                     response.setDurationType(event.getDurationType());
                     response.setStartDate(DateUtils.convertToDate(event.getStartDate()));
                     response.setEndDate(DateUtils.convertToDate(event.getEndDate()));
+                    response.setIsPublished(event.getIsPublished());
                     return response;
                 })
                 .collect(Collectors.toList());
@@ -159,9 +173,39 @@ public  class TicketingServiceImpl implements TicketingService {
                     response.setDurationType(event.getDurationType());
                     response.setStartDate(DateUtils.convertToDate(event.getStartDate()));
                     response.setEndDate(DateUtils.convertToDate(event.getEndDate()));
-                    response.setBannerUrl(event.getBanner());
+                    response.setBannerUrl(event.getCustomization()!=null?event.getCustomization().getImages().getBanner():"");
                     return response;
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public WholeTicketingResponse getTicketingEventById(Long id) {
+        Ticketing event = ticketingRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Event not found"));
+
+        WholeTicketingResponse response = new WholeTicketingResponse();
+
+        response.setEventGeneral(EventGeneralRequest.fromEntity(event));
+
+        response.setPriceCategory(event.getPriceCategories().stream()
+                .map(PriceCategoryRequest::fromEntity)
+                .collect(Collectors.toList()));
+
+        response.setCustomField(event.getCustomFields().stream()
+                .map(CustomFieldRequest::fromEntity)
+                .collect(Collectors.toList()));
+
+        response.setCustomization(event.getCustomization());
+
+        return response;
+    }
+
+    @Override
+    public void updateIsPublished(Long eventId, boolean isPublished) {
+        Ticketing event = ticketingRepository.findById(eventId)
+                .orElseThrow(() -> new IllegalArgumentException("Event not found"));
+        event.setIsPublished(isPublished);
+        ticketingRepository.save(event);
     }
 }

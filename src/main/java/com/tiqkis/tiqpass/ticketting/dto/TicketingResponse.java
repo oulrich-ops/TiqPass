@@ -14,4 +14,5 @@ public class TicketingResponse {
     private Date startDate;
     private Date endDate;
     private String bannerUrl ;
+    private Boolean isPublished;
 }

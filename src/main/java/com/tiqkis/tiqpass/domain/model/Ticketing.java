@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Entity
@@ -23,13 +24,10 @@ public class Ticketing {
     private String address;
     private LocalDate startDate;
     private LocalDate endDate;
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
+    private LocalTime startTime;
+    private LocalTime endTime;
     private String durationType;
-
-    private String shortTextDescription;
-    private String longTextDescription;
-    private String banner;
+    private Boolean isPublished = false;
 
     @ManyToOne
     private EventType eventType;
@@ -37,14 +35,14 @@ public class Ticketing {
     @ManyToOne
     private User promoter;
 
-    @OneToMany(mappedBy = "ticketing", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "ticketing", cascade = CascadeType.ALL)
     private List<PriceCategory> priceCategories;
 
-    @OneToMany(mappedBy = "ticketing", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "ticketing", cascade = CascadeType.ALL)
     private List<CustomField> customFields;
 
 
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL)
     private Customization customization;
 }

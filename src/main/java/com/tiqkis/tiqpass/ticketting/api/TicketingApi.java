@@ -39,6 +39,9 @@ public interface TicketingApi {
             @RequestBody Customization request
     );
 
+    @GetMapping("/{id}")
+    ResponseEntity<ApiResponse<WholeTicketingResponse>> getTicketingEventById(@PathVariable Long id);
+
     // Retrieve all event types
     @GetMapping("/event-types")
     ResponseEntity<ApiResponse<List<EventType>>> getEventTypes();
@@ -60,4 +63,11 @@ public interface TicketingApi {
 
     @GetMapping("/my-ticketing-events")
     ResponseEntity<ApiResponse<List<TicketingResponse>>> getCurrentUserTicketingEvents();
+
+    @PutMapping("/{eventId}/publish")
+    ResponseEntity<ApiResponse<Void>> updateIsPublished(
+            @PathVariable Long eventId,
+            @RequestParam boolean isPublished
+    );
+
 }

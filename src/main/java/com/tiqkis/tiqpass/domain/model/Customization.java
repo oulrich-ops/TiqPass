@@ -14,13 +14,11 @@ public class Customization {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Embedded
     private ContactInfo contactInfo;
 
     @Embedded
     private Description description;
 
-    @Embedded
     private Theme theme;
 
     @Embedded
@@ -29,38 +27,3 @@ public class Customization {
     private String registrationInfo;
 }
 
-@Embeddable
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-class ContactInfo {
-    private String organizerName;
-    private String phone;
-    private String email;
-}
-
-@Embeddable
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-class Description {
-    private String shortDescription;
-    private String longDescription;
-}
-
-@Embeddable
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-class Theme {
-    private String primaryColor;
-}
-
-@Embeddable
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-class Images {
-    private String banner; // Store file paths or URLs
-    private String thumbnail; // Store file paths or URLs
-}
