@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderLine {
+    private int eventId;
     private int categoryId;
     private String categoryName;
     private int quantity;
@@ -34,4 +35,9 @@ public class OrderLine {
                 .map(dto -> fromDto(dto, entityManager))
                 .collect(Collectors.toList());
     }
+
+    public double getTotalPrice() {
+        return price * quantity;
+    }
+
 }

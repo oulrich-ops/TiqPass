@@ -11,10 +11,12 @@ import com.tiqkis.tiqpass.purchasing.repository.OrderRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Service
 public class OrderService {
 
     OrderRepository orderRepository;
@@ -32,6 +34,8 @@ public class OrderService {
         @Transactional
         public Order createOrderFromFrontend(PurchaseDTO orderDTO, Payer payer) {
              Order order = new Order();
+
+            System.out.println("ticketing id: " + orderDTO.getEventId());
 
              order.setTicketing(entityManager.find(Ticketing.class, orderDTO.getEventId()));
             order.setCustomer(payer);

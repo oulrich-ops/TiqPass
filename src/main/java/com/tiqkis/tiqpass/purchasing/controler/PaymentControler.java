@@ -36,24 +36,52 @@ import java.util.stream.Collectors;
 
 @RestController
 public class PaymentControler implements PaymentApi {
-    @Value("${CLIENT_BASE_URL}")
-    String clientBaseUrl;
-    CustomersService customersService;
-    OrderItemService orderItemService;
-    OrderService orderService;
-    TicketRepository ticketRepository;
-    EmailService emailService;
-    TicketPdfService ticketPdfService;
 
-    @Value("${stripe.webhook.secret}")
-    private String endpointSecret;
+
+    private final String clientBaseUrl;
+    private final String stripeWebhookSecret;
+    private final CustomersService customersService;
+    private final OrderItemService orderItemService;
+    private final OrderService orderService;
+    private final TicketRepository ticketRepository;
+    private final EmailService emailService;
+    private final TicketPdfService ticketPdfService;
+    String staticFileBaseUrl ="http://127.0.0.1:8080/api/tiqpass/v1";
+
+
+    public PaymentControler(
+            @Value("${CLIENT_BASE_URL}") String clientBaseUrl,
+            @Value("${stripe.webhook.secret}") String stripeWebhookSecret,
+            CustomersService customersService,
+            OrderItemService orderItemService,
+            OrderService orderService,
+            TicketRepository ticketRepository,
+            EmailService emailService,
+            TicketPdfService ticketPdfService
+    ) {
+        this.clientBaseUrl = clientBaseUrl;
+        this.stripeWebhookSecret = stripeWebhookSecret;
+        this.customersService = customersService;
+        this.orderItemService = orderItemService;
+        this.orderService = orderService;
+        this.ticketRepository = ticketRepository;
+        this.emailService = emailService;
+        this.ticketPdfService = ticketPdfService;
+    }
+
+
+
 
 
     @Override
     public ResponseEntity<ApiResponse<Map<String, String>>> createSession(PurchaseDTO purchase) throws StripeException, JsonProcessingException {
 
-
+        Customer customer = Customer.create(CustomerCreateParams.builder()
+                .setEmail(purchase.getCustomer().getEmail())
+                .setName(purchase.getCustomer().getFirstName() + " " + purchase.getCustomer().getLastName())
+                .build());
         Payer payer = customersService.findByEmail(purchase.getCustomer().getEmail());
+
         if (payer == null){
             customersService.addNewCustomer(purchase.getCustomer());
         }
@@ -64,10 +92,7 @@ public class PaymentControler implements PaymentApi {
         metadata.put("tickets", new ObjectMapper().writeValueAsString(purchase.getTickets()));
         metadata.put("orderId", String.valueOf(order.getId()));
 
-        Customer customer = Customer.create(CustomerCreateParams.builder()
-                .setEmail(purchase.getCustomer().getEmail())
-                .setName(purchase.getCustomer().getFirstName() + " " + purchase.getCustomer().getLastName())
-                .build());
+
 
         List<SessionCreateParams.LineItem> lineItems = purchase.getTickets().stream().map(ticket ->
                 SessionCreateParams.LineItem.builder()
@@ -110,9 +135,9 @@ public class PaymentControler implements PaymentApi {
     }
 
     public ResponseEntity<String> handleStripeWebhook(String payload,String sigHeader) {
-
+        System.out.println("on est rnetré dans le webhook");
         try {
-            Event event = Webhook.constructEvent(payload, sigHeader, endpointSecret);
+            Event event = Webhook.constructEvent(payload, sigHeader, stripeWebhookSecret);
 
             if ("checkout.session.completed".equals(event.getType())) {
                 Session session = (Session) event.getDataObjectDeserializer()
@@ -137,7 +162,6 @@ public class PaymentControler implements PaymentApi {
                         Ticket ticket = new Ticket();
                         ticket.setOrderItem(item);
                         ticket.setValidationCode(UUID.randomUUID().toString());
-
                         byte[] qrImage = ImageUtils.generateQRCode(ticket.getValidationCode());
                         ticket.setQrCodeImage(qrImage);
 
@@ -163,6 +187,7 @@ public class PaymentControler implements PaymentApi {
 
                     String color = order.getTicketing().getCustomization().getTheme().getPrimaryColor();
 
+                    System.out.println("color: " + color);
                     // Vérifier si la couleur est null ou vide
                     if (color != null && !color.isEmpty()) {
                         primaryColor = color;

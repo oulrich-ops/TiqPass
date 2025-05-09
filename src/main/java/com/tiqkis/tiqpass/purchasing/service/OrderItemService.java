@@ -5,9 +5,11 @@ import com.tiqkis.tiqpass.purchasing.dto.OrderLine;
 import com.tiqkis.tiqpass.purchasing.repository.OrderItemRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class OrderItemService {
 
     OrderItemRepository orderItemRepository;

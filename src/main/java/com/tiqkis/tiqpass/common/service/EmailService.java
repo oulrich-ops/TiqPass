@@ -5,6 +5,7 @@ import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -25,8 +26,8 @@ import java.util.UUID;
 public class EmailService {
     @Autowired
     private JavaMailSender mailSender;
-    Logger logger = (Logger) LoggerFactory.getLogger(EmailService.class);
-
+    @Value("${spring.mail.username}")  // Récupère l'adresse e-mail depuis les propriétés
+    private String fromEmail;
 
     /**
      * Envoie un email avec les billets en pièce jointe et un contenu HTML professionnel
@@ -44,12 +45,14 @@ public class EmailService {
     public void sendTicketsEmail(String to, String customerName, String eventName,
                                  String eventDate, String orderNumber, int ticketCount,
                                  byte[] pdfAttachment, String primaryColor) throws MessagingException, UnsupportedEncodingException {
+
+        System.out.printf("on envoie un email à %s pour l'événement %s\n", to, eventName);
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
         helper.setTo(to);
         helper.setSubject("🎟️ Vos billets pour " + eventName);
-        helper.setFrom(new InternetAddress("billetterie@example.com", "Billetterie " + eventName));
+        helper.setFrom(new InternetAddress(fromEmail, "Billetterie " + eventName));
 
         // Construction du corps de l'email en HTML
         String htmlContent = createHtmlEmailContent(customerName, eventName, eventDate,
@@ -77,7 +80,7 @@ public class EmailService {
         mailSender.send(message);
 
         // Enregistrement de l'envoi dans les logs
-        logger.info("Email avec billets envoyé à {} pour l'événement {}", to, eventName);
+        System.out.println("Email avec billets envoyé à "+ to+" pour l'événement "+ eventName);
     }
 
     /**

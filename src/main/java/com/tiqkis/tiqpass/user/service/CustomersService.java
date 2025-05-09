@@ -2,7 +2,9 @@ package com.tiqkis.tiqpass.user.service;
 
 import com.tiqkis.tiqpass.domain.model.Payer;
 import com.tiqkis.tiqpass.user.repositories.CustomersRepository;
+import org.springframework.stereotype.Service;
 
+@Service
 public class CustomersService implements ICustomersService {
 
     private final CustomersRepository customersRepository;

@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.net.URL;
 import java.util.List;
 
@@ -38,6 +39,7 @@ public class TicketPdfService {
     public byte[] generateTicketPdf(String eventName, String customerName, String categoryName, String validationCode,
                                     String primaryColor, String imageLink,String eventDate) throws Exception {
 
+            System.out.println("code de validation: " + validationCode);
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             // Initialisation du document PDF
             PdfWriter writer = new PdfWriter(outputStream);
@@ -79,13 +81,17 @@ public class TicketPdfService {
 
             // Ajout de l'image d'événement
             try {
-                Image eventImage = new Image(ImageDataFactory.create(new URL(imageLink)))
-                        .scaleToFit(120, 80)
-                        .setFixedPosition(20, pageSize.getHeight() - 100);
-                document.add(eventImage);
+                    URL imageUrl = getClass().getResource(imageLink);
+
+                assert imageUrl != null;
+                Image eventImage = new Image(ImageDataFactory.create(imageUrl))
+                            .scaleToFit(120, 80)
+                            .setFixedPosition(20, pageSize.getHeight() - 100);
+
+                    document.add(eventImage);
+
             } catch (Exception e) {
-                // En cas d'erreur avec l'image, on ignore et on continue
-                System.err.println("Impossible de charger l'image: " + e.getMessage());
+                    System.err.println("Erreur de chargement de l'image: " + e.getMessage());
             }
 
             // Zone principale du ticket
@@ -230,16 +236,15 @@ public class TicketPdfService {
 
                         // Pour chaque ticket
                         for (int i = 0; i < tickets.size(); i++) {
-
+                                System.out.println("code de validation i " + tickets.get(i).getValidationCode());
                                 Ticket ticket = tickets.get(i);
 
                                 // Générer le ticket individuel
                                 byte[] ticketPdfBytes = generateTicketPdf(
                                         eventName,
                                         customerName,
-                                        eventDate,
+                                        eventDate,ticket.getValidationCode(),
                                         ticket.getOrderItem().getCategoryName(),
-                                        ticket.getValidationCode(),
                                         primaryColor,
                                         imageLink
                                 );
