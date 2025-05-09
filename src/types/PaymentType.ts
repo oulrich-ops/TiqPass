@@ -7,6 +7,7 @@ export interface PurchaseInterface {
     eventId:number;
     tickets: SelectedTicket[];
     customer:CustomerInfo;
+    taxe:number;
 
 }
 

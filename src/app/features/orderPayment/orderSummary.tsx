@@ -62,7 +62,7 @@ export default function OrderSummary({ tickets, total, onPayment, isFormValid }:
         <div className="border-t border-gray-200 pt-3 mt-3">
           <div className="flex justify-between items-center text-lg">
             <span className="font-bold">Total</span>
-            <span className="font-bold text-primary">{total.toFixed(2)} €</span>
+            <span className="font-bold text-primary">{(total+vatAmount).toFixed(2)} €</span>
           </div>
         </div>
       </div>

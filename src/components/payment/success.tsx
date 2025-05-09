@@ -1,9 +1,12 @@
 import { Check, ArrowLeft, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
+import { Routes, useNavigate } from "react-router-dom";
+import { routes } from "@/routes";
 
 export default function PaymentSuccess() {
   const [_, setLocation] = useLocation();
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -35,7 +38,7 @@ export default function PaymentSuccess() {
         <div className="mt-8 space-y-4">
           <div className="flex flex-col gap-4 sm:flex-row">
             <Button
-              onClick={() => setLocation("/")}
+              onClick={() => navigate(routes.home)}
               className="w-full flex items-center justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
             >
               <ShoppingBag className="mr-2 h-4 w-4" />

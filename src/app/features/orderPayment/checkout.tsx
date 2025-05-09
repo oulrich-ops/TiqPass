@@ -10,6 +10,7 @@ import OrderSummary from "./orderSummary";
 import LoadingOverlay from "./LoadingOverlay";
 import apiClient from "@/config/apiServiceConfig";
 import { apiPaymentService } from "@/config/apiServices";
+import { useParams } from "react-router-dom";
 
 
 type props = {
@@ -19,6 +20,10 @@ type props = {
 }
 
  const Checkout = ({ tickets, total,onback }:props) =>{
+
+    const { id, slug } = useParams<{ id: string; slug: string }>();
+
+
 
   const [customerInfo, setCustomerInfo] = useState<CustomerInfo>({
     firstName: '',
@@ -40,15 +45,18 @@ type props = {
 
     try {
       setIsLoading(true);
+      const vatRate = 0.2;
       const purchase: PurchaseInterface = {
-        eventId:0,
+        eventId:Number(id),
         customer:customerInfo,
-        tickets:tickets
+        tickets:tickets,
+        taxe:total * vatRate / (1 + vatRate),
       }
       const res = await apiPaymentService.createCheckoutSession(purchase)
       const data = res.data as { sessionId: string };
 
       const  sessionId  = data.sessionId;
+      console.log(data)
       const stripe = await stripePromise;
       if(sessionId)
       await stripe?.redirectToCheckout({ sessionId });

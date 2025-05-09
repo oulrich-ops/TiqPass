@@ -14,6 +14,7 @@ import Checkout from '../orderPayment/checkout';
 
 
 export type SelectedTicket = {
+  eventId: number;
   categoryId: number;
   categoryName: string;
   quantity: number;
@@ -37,25 +38,7 @@ const TicketingPublicView = () => {
     0
   );
 
-  
 
-  useEffect(() => {
-    const updatedTickets: SelectedTicket[] = [];
-  
-    data?.priceCategory.forEach((cat) => {
-      const quantity = quantities[cat.id!.toString()] || 0;
-      if (quantity > 0) {
-        updatedTickets.push({
-          categoryId: Number(cat.id!),
-          categoryName: cat.name,
-          quantity,
-          price: cat.price,
-        });
-      }
-    });
-  
-    setSelectedTickets(updatedTickets);
-  }, [quantities, data?.priceCategory]);
 
   useEffect(() => {
     const fetchEventData = async () => {
@@ -79,7 +62,26 @@ const TicketingPublicView = () => {
     fetchEventData();
   }, [id]);
 
- 
+ useEffect(() => {
+    const updatedTickets: SelectedTicket[] = [];
+
+    console.log(data);
+  
+    data?.priceCategory.forEach((cat) => {
+      const quantity = quantities[cat.id!.toString()] || 0;
+      if (quantity > 0) {
+        updatedTickets.push({
+          categoryId: Number(cat.id!),
+          categoryName: cat.name,
+          quantity,
+          price: cat.price,
+          eventId: Number(id),
+        });
+      }
+    });
+  
+    setSelectedTickets(updatedTickets);
+  }, [quantities, data?.priceCategory]);
 
   if (loading) {
     return (
