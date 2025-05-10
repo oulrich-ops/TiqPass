@@ -2,9 +2,7 @@ package com.tiqkis.tiqpass.domain.model;
 
 import com.tiqkis.tiqpass.user.model.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,6 +13,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter @Setter
 public class Ticketing {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

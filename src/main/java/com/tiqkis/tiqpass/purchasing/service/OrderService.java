@@ -6,6 +6,7 @@ import com.tiqkis.tiqpass.domain.model.Ticketing;
 import com.tiqkis.tiqpass.domain.purchasing.Order;
 import com.tiqkis.tiqpass.domain.purchasing.OrderItem;
 import com.tiqkis.tiqpass.domain.purchasing.OrderStatus;
+import com.tiqkis.tiqpass.purchasing.dto.OrderDetailsDTO;
 import com.tiqkis.tiqpass.purchasing.dto.PurchaseDTO;
 import com.tiqkis.tiqpass.purchasing.repository.OrderRepository;
 import jakarta.persistence.EntityManager;
@@ -71,6 +72,12 @@ public class OrderService {
 
     public void save(Order order) {
         orderRepository.save(order);
+    }
+
+    public OrderDetailsDTO getOrderDetails(String orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found with ID: " + orderId));
+        return new OrderDetailsDTO(order.getId(), order.getAmount(), order.getStatus(), order.getCreatedAt());
     }
 }
 

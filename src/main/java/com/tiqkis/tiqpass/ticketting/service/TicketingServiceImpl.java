@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,7 +25,7 @@ public  class TicketingServiceImpl implements TicketingService {
     private final PriceCategoryRepository priceCategoryRepository;
 
     public TicketingServiceImpl(TicketingRepository ticketingEventRepository, EventTypeRepository eventTypeRepository
-    , PriceCategoryRepository priceCategoryRepository) {
+            , PriceCategoryRepository priceCategoryRepository) {
         this.ticketingRepository = ticketingEventRepository;
         this.eventTypeRepository = eventTypeRepository;
         this.priceCategoryRepository = priceCategoryRepository;
@@ -32,9 +33,9 @@ public  class TicketingServiceImpl implements TicketingService {
 
     @Override
     public Long createEventGeneral(EventGeneralRequest request, User user) {
-        try{
+        try {
             Ticketing event = new Ticketing();
-            if(request.getId()!=null)
+            if (request.getId() != null)
                 event.setId(Long.valueOf(request.getId()));
             event.setPromoter(user);
             event.setName(request.getName());
@@ -43,14 +44,14 @@ public  class TicketingServiceImpl implements TicketingService {
             event.setAddress(request.getAddress());
             event.setDurationType(request.getDurationType());
             event.setStartDate(DateUtils.convertToLocalDate(request.getStartDate()));
-            event.setEndDate(DateUtils.convertToLocalDate(request.getEndDate()!=null ? request.getEndDate() : request.getStartDate()));
+            event.setEndDate(DateUtils.convertToLocalDate(request.getEndDate() != null ? request.getEndDate() : request.getStartDate()));
             event.setStartTime(LocalTime.parse(request.getStartTime()));
-            if(request.getEndTime()!=null)
+            if (request.getEndTime() != null)
                 event.setEndTime(LocalTime.parse(request.getEndTime()));
 
-        ticketingRepository.save(event);
-        return event.getId();
-        }catch (Exception e){
+            ticketingRepository.save(event);
+            return event.getId();
+        } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Error creating event: " + e.getMessage());
         }
@@ -100,7 +101,6 @@ public  class TicketingServiceImpl implements TicketingService {
     public void addCustomFields(Long eventId, List<CustomFieldRequest> customFields) {
         Ticketing event = ticketingRepository.findById(eventId)
                 .orElseThrow(() -> new IllegalArgumentException("Event not found"));
-
 
 
         List<CustomField> fields = customFields.stream()
@@ -173,7 +173,7 @@ public  class TicketingServiceImpl implements TicketingService {
                     response.setDurationType(event.getDurationType());
                     response.setStartDate(DateUtils.convertToDate(event.getStartDate()));
                     response.setEndDate(DateUtils.convertToDate(event.getEndDate()));
-                    response.setBannerUrl(event.getCustomization()!=null?event.getCustomization().getImages().getBanner():"");
+                    response.setBannerUrl(event.getCustomization() != null ? event.getCustomization().getImages().getBanner() : "");
                     return response;
                 })
                 .collect(Collectors.toList());
@@ -207,5 +207,30 @@ public  class TicketingServiceImpl implements TicketingService {
                 .orElseThrow(() -> new IllegalArgumentException("Event not found"));
         event.setIsPublished(isPublished);
         ticketingRepository.save(event);
+    }
+
+    @Override
+    public List<TicketingResponse> getPublishedEvents() {
+        return ticketingRepository.findByIsPublishedTrue()
+                .stream()
+                .map(event -> {
+                    Double minPrice = event.getPriceCategories().stream()
+                            .map(PriceCategory::getPrice)
+                            .min(Double::compareTo)
+                            .orElse(null); // Handle cases where no price categories exist
+
+                    return new TicketingResponse(
+                            event.getId(),
+                            event.getName(),
+                            event.getLocation(),
+                            event.getAddress(),
+                            event.getDurationType(),
+                            DateUtils.convertToDate(event.getStartDate()),
+                            DateUtils.convertToDate(event.getEndDate()),
+                            minPrice
+                    );
+                })
+                .toList();
+
     }
 }

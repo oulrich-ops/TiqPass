@@ -217,4 +217,16 @@ public class PaymentControler implements PaymentApi {
     }
 
 
+    @Override
+    public ResponseEntity<ApiResponse<OrderDetailsDTO>> getOrderDetails(String orderId) {
+        OrderDetailsDTO orderDetails = orderService.getOrderDetails(orderId);
+        ApiResponse<OrderDetailsDTO> response = ApiResponseUtil.buildApiResponse(
+                "Order details retrieved successfully",
+                orderDetails,
+                HttpStatus.OK.value()
+        );
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+
 }

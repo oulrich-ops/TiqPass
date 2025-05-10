@@ -70,4 +70,7 @@ public interface TicketingApi {
             @RequestParam boolean isPublished
     );
 
+    @GetMapping("/published-events")
+    ResponseEntity<ApiResponse<List<TicketingResponse>>> getPublishedTicketingEvents();
+
 }

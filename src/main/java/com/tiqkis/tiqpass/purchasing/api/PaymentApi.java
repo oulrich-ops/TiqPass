@@ -3,6 +3,7 @@ package com.tiqkis.tiqpass.purchasing.api;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.stripe.exception.StripeException;
 import com.tiqkis.tiqpass.common.ApiResponse;
+import com.tiqkis.tiqpass.purchasing.dto.OrderDetailsDTO;
 import com.tiqkis.tiqpass.purchasing.dto.PurchaseDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,5 +19,7 @@ public interface PaymentApi {
     @PostMapping("/stripe/webhook")
     ResponseEntity<String> handleStripeWebhook(@RequestBody String payload, @RequestHeader("Stripe-Signature") String sigHeader);
 
+    @GetMapping("/order/{orderId}")
+    ResponseEntity<ApiResponse<OrderDetailsDTO>> getOrderDetails(@PathVariable String orderId);
 
 }

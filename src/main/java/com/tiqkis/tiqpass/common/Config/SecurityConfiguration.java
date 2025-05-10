@@ -46,6 +46,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/agent/**").hasRole("TICKET_AGENT")
                         .requestMatchers("/images/**", "/uploads/**").permitAll()
                         .requestMatchers("/payment/stripe/webhook").permitAll()
+                        .requestMatchers("/ticketing/published-events").permitAll()
                         .dispatcherTypeMatchers(DispatcherType.ERROR).authenticated()
                         .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))

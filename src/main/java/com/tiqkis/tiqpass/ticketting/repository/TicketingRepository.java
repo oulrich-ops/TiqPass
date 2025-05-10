@@ -13,4 +13,7 @@ public interface TicketingRepository extends JpaRepository<Ticketing, Long> {
 
     @Query("SELECT t FROM Ticketing t WHERE t.promoter.id = :userId")
     List<Ticketing> findByUserId(@Param("userId") Long userId);
+
+    List<Ticketing> findByIsPublishedTrue();
+
 }

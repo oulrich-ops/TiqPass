@@ -141,4 +141,18 @@ public class TicketingController implements TicketingApi {
         );
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    @Override
+    public ResponseEntity<ApiResponse<List<TicketingResponse>>> getPublishedTicketingEvents() {
+        List<TicketingResponse> publishedEvents = ticketingService.getPublishedEvents();
+        if (publishedEvents.isEmpty()) {
+            ApiResponse<List<TicketingResponse>> response = ApiResponseUtil.buildApiResponse("No published events found", null, HttpStatus.NO_CONTENT.value());
+            return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
+        }else
+        {
+            ApiResponse<List<TicketingResponse>> response = ApiResponseUtil.buildApiResponse("Published events retrieved successfully", publishedEvents, HttpStatus.OK.value());
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+    }
+
 }

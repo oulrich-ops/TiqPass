@@ -19,5 +19,6 @@ public interface TicketingService {
     List<TicketingResponse> getTicketingEventsByUserId(Long id);
     WholeTicketingResponse getTicketingEventById(Long id);
     void updateIsPublished(Long eventId, boolean isPublished);
+    List<TicketingResponse> getPublishedEvents() ;
 
 }
