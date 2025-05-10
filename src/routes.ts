@@ -21,6 +21,9 @@ export const routes = {
   ticketingPublicView: (slug: string, id: string) => `/ticketting/${slug}/${id}/p`,
   paymentfail: '/payment/failure',
   paymentSuccess: '/payment/success',
+  events: '/events',
+
+  customerOrder: (orderId: string) => `/order/${orderId}`,
 };
 
 

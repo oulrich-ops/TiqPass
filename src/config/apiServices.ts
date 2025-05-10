@@ -69,6 +69,9 @@ export const apiService = {
 
     updateIsPublished: (eventId: number, isPublished: boolean) =>
         apiRequest<void>("PUT", apiRoutes.events.updateIsPublished(eventId, isPublished)),
+
+    getPublishedEvents: () =>
+        apiRequest<Billeterie[]>("GET", apiRoutes.events.getPublishedEvents),
     
           };
 
@@ -95,6 +98,9 @@ export const apiFileService = {
 export const apiPaymentService = {
     createCheckoutSession: (purchase:PurchaseInterface) => 
         apiRequest<{ sessionId: string }>("POST", apiRoutes.payment.createSession,purchase),
+
+    getOrderDetails: (orderId: string) =>
+        apiRequest<SelectedTicket[]>("GET", apiRoutes.payment.orderDetails(orderId)),
        
 
 }

@@ -1,4 +1,4 @@
-import AppLayoutPage from "@/app/dashboard/page.tsx";
+import AppLayoutPage from "@/app/dashboardLayout/page";
 import AddUpdateEventform from "@/app/features/addUpdateEventform.tsx";
 
 

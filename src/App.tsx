@@ -7,7 +7,7 @@ import Tickets from "@/tickets.tsx";
 import TicketDetails from "@/ticket_details.tsx";
 import UserSettings from "@/user_settings_form.tsx";
 import Register from "@/components/register-form.tsx";
-import DashboardPage from "@/app/dashboard/page.tsx";
+import DashboardPage from "@/app/dashboardLayout/page.tsx";
 import { EventCreationStepper } from "@/components/EventCreationStepper";
 import {useSelector} from "react-redux";
 import {RootState} from "@/app/store.ts";

@@ -4,7 +4,7 @@ import { format } from "date-fns"
 //@ts-ignore
 import fr from "date-fns/locale/fr"
 import {undefined} from "zod";
-import AppLayout from '@/app/dashboard/page.tsx'
+import AppLayout from '@/app/dashboardLayout/page'
 import { Skeleton } from "@/components/ui/skeleton"
 import { FaEdit, FaTrash, FaGlobe,FaArchive, FaEye } from "react-icons/fa" 
 
@@ -23,6 +23,7 @@ export type Billeterie = {
   endDate: string;   // ou Date
   bannerUrl: string;
   isPublished: boolean;
+  minPrice: number;
 }
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL

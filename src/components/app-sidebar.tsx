@@ -21,9 +21,13 @@ const data = {
   versions: ["1.0.1", "1.1.0-alpha", "2.0.0-beta1"],
   navMain: [
     {
-      title: "Getting Started",
+      title: "TiqPass Billetterie",
       url: "#",
       items: [
+        {
+          title: "Vue Globale",
+          url: routes.dashboard,
+        },
         {
           title: "Mes billetteries",
           url: routes.userEvents,
@@ -34,113 +38,34 @@ const data = {
         },
       ],
     },
-    {
-      title: "Building Your Application",
+    /*{
+      title: "Mes tickets",
       url: "#",
       items: [
         {
-          title: "Routing",
+          title: "Mes tickets",
+          url: routes.tickets,
+        },
+        {
+          title: "Mes commandes",
           url: "#",
         },
         {
-          title: "Data Fetching",
-          url: "#",
-          isActive: true,
-        },
-        {
-          title: "Rendering",
-          url: "#",
-        },
-        {
-          title: "Caching",
-          url: "#",
-        },
-        {
-          title: "Styling",
-          url: "#",
-        },
-        {
-          title: "Optimizing",
-          url: "#",
-        },
-        {
-          title: "Configuring",
-          url: "#",
-        },
-        {
-          title: "Testing",
-          url: "#",
-        },
-        {
-          title: "Authentication",
-          url: "#",
-        },
-        {
-          title: "Deploying",
-          url: "#",
-        },
-        {
-          title: "Upgrading",
-          url: "#",
-        },
-        {
-          title: "Examples",
+          title: "Mes événements",
           url: "#",
         },
       ],
-    },
+    },*/
     {
-      title: "API Reference",
+      title: "Mon compte",
       url: "#",
       items: [
         {
-          title: "Components",
-          url: "#",
+          title: "Mon profil",
+          url: routes.userSettings,
         },
         {
-          title: "File Conventions",
-          url: "#",
-        },
-        {
-          title: "Functions",
-          url: "#",
-        },
-        {
-          title: "next.config.js Options",
-          url: "#",
-        },
-        {
-          title: "CLI",
-          url: "#",
-        },
-        {
-          title: "Edge Runtime",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Architecture",
-      url: "#",
-      items: [
-        {
-          title: "Accessibility",
-          url: "#",
-        },
-        {
-          title: "Fast Refresh",
-          url: "#",
-        },
-        {
-          title: "Next.js Compiler",
-          url: "#",
-        },
-        {
-          title: "Supported Browsers",
-          url: "#",
-        },
-        {
-          title: "Turbopack",
+          title: "Mes paramètres",
           url: "#",
         },
       ],

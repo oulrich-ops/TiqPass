@@ -89,7 +89,6 @@ export default function AppLayout({ children, breadcrumb = [] }: AppLayoutProps)
                             <DropdownMenuItem>Équipe</DropdownMenuItem>
                             <DropdownMenuItem
                                 onClick={() => {
-                                    alert("ici")
                                     dispatch(logout()); // Clear user and token from Redux and localStorage
                                     toast.success("Déconnexion réussie !");
                                     navigate(routes.login); // Redirect to the login page
