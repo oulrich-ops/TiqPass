@@ -75,9 +75,10 @@ public class OrderService {
     }
 
     public OrderDetailsDTO getOrderDetails(String orderId) {
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new ResourceNotFoundException("Order not found with ID: " + orderId));
-        return new OrderDetailsDTO(order.getId(), order.getAmount(), order.getStatus(), order.getCreatedAt());
+        Order order = orderRepository.findById(Long.valueOf(orderId))
+                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+
+        return OrderDetailsDTO.fromModel(order);
     }
 }
 

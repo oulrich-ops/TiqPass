@@ -27,6 +27,7 @@ public class Ticketing {
     private LocalTime endTime;
     private String durationType;
     private Boolean isPublished = false;
+    private Integer totalTickets = 0;
 
     @ManyToOne
     private EventType eventType;

@@ -16,11 +16,14 @@ public class TicketingResponse {
     private Date endDate;
     private String bannerUrl ;
     private Boolean isPublished;
+    private Integer totalTickets;
+
 
     public  TicketingResponse (){
     }
 
-    public TicketingResponse(Long id, String name, String location, String address, String durationType, Date startDate, Date endDate, Double minPrice) {
+    public TicketingResponse(Long id, String name, String location, String address, String durationType,
+                             Date startDate, Date endDate, Double minPrice, Integer totalTickets) {
         this.id = id;
         this.name = name;
         this.location = location;
@@ -29,5 +32,6 @@ public class TicketingResponse {
         this.startDate = startDate;
         this.endDate = endDate;
         this.minPrice = minPrice;
+        this.totalTickets = totalTickets;
     }
 }

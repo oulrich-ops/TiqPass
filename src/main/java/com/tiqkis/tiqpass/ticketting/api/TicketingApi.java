@@ -73,4 +73,7 @@ public interface TicketingApi {
     @GetMapping("/published-events")
     ResponseEntity<ApiResponse<List<TicketingResponse>>> getPublishedTicketingEvents();
 
+    @GetMapping("/my-ticketing-events/stats")
+    ResponseEntity<ApiResponse<List<TicketingStatsResponse>>> getUserTicketingStats();
+
 }

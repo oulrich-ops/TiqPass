@@ -2,6 +2,8 @@ package com.tiqkis.tiqpass.ticketting.service;
 
 import com.tiqkis.tiqpass.common.DateUtils;
 import com.tiqkis.tiqpass.domain.model.*;
+import com.tiqkis.tiqpass.domain.purchasing.Order;
+import com.tiqkis.tiqpass.purchasing.repository.OrderRepository;
 import com.tiqkis.tiqpass.ticketting.dto.*;
 import com.tiqkis.tiqpass.domain.model.Ticketing;
 import com.tiqkis.tiqpass.ticketting.repository.EventTypeRepository;
@@ -23,12 +25,15 @@ public  class TicketingServiceImpl implements TicketingService {
     private final TicketingRepository ticketingRepository;
     private final EventTypeRepository eventTypeRepository;
     private final PriceCategoryRepository priceCategoryRepository;
+    private final OrderRepository orderRepository;
 
-    public TicketingServiceImpl(TicketingRepository ticketingEventRepository, EventTypeRepository eventTypeRepository
-            , PriceCategoryRepository priceCategoryRepository) {
+    public TicketingServiceImpl(TicketingRepository ticketingEventRepository,
+                                EventTypeRepository eventTypeRepository, OrderRepository orderRepository,
+            PriceCategoryRepository priceCategoryRepository) {
         this.ticketingRepository = ticketingEventRepository;
         this.eventTypeRepository = eventTypeRepository;
         this.priceCategoryRepository = priceCategoryRepository;
+        this.orderRepository = orderRepository;
     }
 
     @Override
@@ -174,6 +179,8 @@ public  class TicketingServiceImpl implements TicketingService {
                     response.setStartDate(DateUtils.convertToDate(event.getStartDate()));
                     response.setEndDate(DateUtils.convertToDate(event.getEndDate()));
                     response.setBannerUrl(event.getCustomization() != null ? event.getCustomization().getImages().getBanner() : "");
+                    response.setTotalTickets(event.getTotalTickets());
+                    response.setIsPublished(event.getIsPublished());
                     return response;
                 })
                 .collect(Collectors.toList());
@@ -211,6 +218,7 @@ public  class TicketingServiceImpl implements TicketingService {
 
     @Override
     public List<TicketingResponse> getPublishedEvents() {
+
         return ticketingRepository.findByIsPublishedTrue()
                 .stream()
                 .map(event -> {
@@ -227,10 +235,50 @@ public  class TicketingServiceImpl implements TicketingService {
                             event.getDurationType(),
                             DateUtils.convertToDate(event.getStartDate()),
                             DateUtils.convertToDate(event.getEndDate()),
-                            minPrice
+                            minPrice,
+                            event.getTotalTickets()
                     );
                 })
                 .toList();
 
+
+
     }
+
+    @Override
+    public List<TicketingStatsResponse> getTicketingEventsStatsByUserId(Long userId) {
+        return ticketingRepository.findByUserId(userId).stream()
+                .map(event -> {
+                    TicketingStatsResponse response = new TicketingStatsResponse();
+                    response.setId(event.getId());
+                    response.setName(event.getName());
+                    response.setLocation(event.getLocation());
+                    response.setAddress(event.getAddress());
+                    response.setDurationType(event.getDurationType());
+                    response.setStartDate(DateUtils.convertToDate(event.getStartDate()));
+                    response.setEndDate(DateUtils.convertToDate(event.getEndDate()));
+                    response.setBannerUrl(event.getCustomization() != null ? event.getCustomization().getImages().getBanner() : "");
+                    response.setTotalTickets(event.getTotalTickets());
+
+                    List<Order> orders = orderRepository.findAllByTicketingId(event.getId());
+
+                    // Calculate soldTickets and revenue
+                    int soldTickets = orders.stream()
+                            .mapToInt(Order::getTicketQuantity)
+                            .sum();
+                    double revenue = orders.stream()
+                            .mapToDouble(order -> order.getTicketQuantity() * order.getTicketPrice())
+                            .sum();
+
+
+
+                    response.setSoldTickets(soldTickets);
+                    response.setRevenue(revenue);
+                    response.setAvailableTickets(event.getTotalTickets() - soldTickets);
+                    return response;
+                })
+                .collect(Collectors.toList());
+    }
+
+
 }

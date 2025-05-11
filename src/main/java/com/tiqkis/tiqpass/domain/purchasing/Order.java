@@ -45,7 +45,17 @@ public class Order {
         this.createdAt = LocalDateTime.now();
     }
 
+    public int getTicketQuantity() {
+        return items.stream()
+                .mapToInt(OrderItem::getQuantity)
+                .sum();
+    }
 
+    public double getTicketPrice() {
+        return items.stream()
+                .mapToDouble(OrderItem::getUnitPrice)
+                .sum();
+    }
 
 
 }

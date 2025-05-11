@@ -22,6 +22,7 @@ public class PurchaseDTO {
         for (OrderLine ticket : tickets) {
             totalAmount += ticket.getPrice()*ticket.getQuantity();
         }
+
         totalAmount += taxe;
         return totalAmount;
     }

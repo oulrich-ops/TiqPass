@@ -19,6 +19,7 @@ import com.tiqkis.tiqpass.domain.purchasing.OrderItem;
 import com.tiqkis.tiqpass.domain.purchasing.OrderStatus;
 import com.tiqkis.tiqpass.domain.purchasing.Ticket;
 import com.tiqkis.tiqpass.purchasing.api.PaymentApi;
+import com.tiqkis.tiqpass.purchasing.dto.OrderDetailsDTO;
 import com.tiqkis.tiqpass.purchasing.dto.OrderLine;
 import com.tiqkis.tiqpass.purchasing.dto.PurchaseDTO;
 import com.tiqkis.tiqpass.purchasing.repository.TicketRepository;
@@ -199,7 +200,9 @@ public class PaymentControler implements PaymentApi {
                             eventDate,tickets, primaryColor,
                             order.getTicketing().getCustomization().getImages().getBanner());
 
-                    emailService.sendTicketsEmail(customer.getEmail(),customerName,eventName,eventDate,order.getStripeSessionId(),tickets.size(), pdf,primaryColor);
+                    emailService.sendTicketsEmail(customer.getEmail(),customerName,eventName,eventDate,
+                            order.getId().toString(),tickets.size(), pdf,primaryColor);
+
                 } catch (Exception ex) {
                     ex.printStackTrace();
                     // Tu peux journaliser l'erreur ou la gérer proprement

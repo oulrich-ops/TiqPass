@@ -3,6 +3,7 @@ package com.tiqkis.tiqpass.ticketting.controler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tiqkis.tiqpass.common.ApiResponse;
+import com.tiqkis.tiqpass.common.DateUtils;
 import com.tiqkis.tiqpass.common.interfaces.ApiResponseUtil;
 import com.tiqkis.tiqpass.domain.model.*;
 import com.tiqkis.tiqpass.ticketting.api.TicketingApi;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 public class TicketingController implements TicketingApi {
@@ -144,6 +146,7 @@ public class TicketingController implements TicketingApi {
 
     @Override
     public ResponseEntity<ApiResponse<List<TicketingResponse>>> getPublishedTicketingEvents() {
+
         List<TicketingResponse> publishedEvents = ticketingService.getPublishedEvents();
         if (publishedEvents.isEmpty()) {
             ApiResponse<List<TicketingResponse>> response = ApiResponseUtil.buildApiResponse("No published events found", null, HttpStatus.NO_CONTENT.value());
@@ -153,6 +156,21 @@ public class TicketingController implements TicketingApi {
             ApiResponse<List<TicketingResponse>> response = ApiResponseUtil.buildApiResponse("Published events retrieved successfully", publishedEvents, HttpStatus.OK.value());
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
+    }
+
+    @Override
+    public ResponseEntity<ApiResponse<List<TicketingStatsResponse>>> getUserTicketingStats() {
+
+        Long currentUserId = Long.valueOf(userService.getCurrentUser().getId());
+
+        List<TicketingStatsResponse> ticketingStats = ticketingService.getTicketingEventsStatsByUserId(currentUserId);
+
+        ApiResponse<List<TicketingStatsResponse>> response = ApiResponseUtil.buildApiResponse("Ticketing stats retrieved successfully", ticketingStats, HttpStatus.OK.value());
+        if (ticketingStats.isEmpty()) {
+            return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(response, HttpStatus.OK);
+
     }
 
 }

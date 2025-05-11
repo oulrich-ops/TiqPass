@@ -39,7 +39,6 @@ public class TicketPdfService {
     public byte[] generateTicketPdf(String eventName, String customerName, String categoryName, String validationCode,
                                     String primaryColor, String imageLink,String eventDate) throws Exception {
 
-            System.out.println("code de validation: " + validationCode);
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             // Initialisation du document PDF
             PdfWriter writer = new PdfWriter(outputStream);
@@ -236,8 +235,7 @@ public class TicketPdfService {
 
                         // Pour chaque ticket
                         for (int i = 0; i < tickets.size(); i++) {
-                                System.out.println("code de validation i " + tickets.get(i).getValidationCode());
-                                Ticket ticket = tickets.get(i);
+                                 Ticket ticket = tickets.get(i);
 
                                 // Générer le ticket individuel
                                 byte[] ticketPdfBytes = generateTicketPdf(
