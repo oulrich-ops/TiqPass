@@ -85,6 +85,10 @@ public class PaymentControler implements PaymentApi {
 
         if (payer == null){
             customersService.addNewCustomer(purchase.getCustomer());
+        } else {
+            payer.setLastName(purchase.getCustomer().getLastName());
+            payer.setFirstName(purchase.getCustomer().getFirstName());
+            customersService.updateCustomer(payer);
         }
 
         Order order = orderService.createOrderFromFrontend(purchase,payer);
@@ -100,7 +104,7 @@ public class PaymentControler implements PaymentApi {
                         .setQuantity(Long.valueOf(ticket.getQuantity()))
                         .setPriceData(SessionCreateParams.LineItem.PriceData.builder()
                                 .setCurrency("eur")
-                                .setUnitAmount((long) (ticket.getPrice() * 100))
+                                .setUnitAmount((long) (ticket.getPrice() * 1.20 * 100))
                                 .setProductData(SessionCreateParams.LineItem.PriceData.ProductData.builder()
                                         .setName(ticket.getCategoryName())
                                         .build())
@@ -136,11 +140,11 @@ public class PaymentControler implements PaymentApi {
     }
 
     public ResponseEntity<String> handleStripeWebhook(String payload,String sigHeader) {
-        System.out.println("on est rnetré dans le webhook");
-        try {
+         try {
             Event event = Webhook.constructEvent(payload, sigHeader, stripeWebhookSecret);
 
             if ("checkout.session.completed".equals(event.getType())) {
+                System.out.println( "on est là");
                 Session session = (Session) event.getDataObjectDeserializer()
                         .getObject()
                         .orElseThrow(() -> new IllegalStateException("Session non trouvée"));
@@ -196,9 +200,16 @@ public class PaymentControler implements PaymentApi {
                 }
 
                 try {
-                    byte[] pdf = ticketPdfService.generateMultipleTicketsPdf(eventName,customerName,
+                    byte[] pdf = null;
+                    if(tickets.size() > 0)
+                     pdf = ticketPdfService.generateMultipleTicketsPdf(eventName,customerName,
                             eventDate,tickets, primaryColor,
                             order.getTicketing().getCustomization().getImages().getBanner());
+                    else
+                     pdf = ticketPdfService.generateTicketPdf(eventName,customerName,
+                            tickets.get(0).getOrderItem().getCategory().getName(),
+                            tickets.get(0).getValidationCode(),
+                             primaryColor,order.getTicketing().getCustomization().getImages().getBanner(),eventDate);
 
                     emailService.sendTicketsEmail(customer.getEmail(),customerName,eventName,eventDate,
                             order.getId().toString(),tickets.size(), pdf,primaryColor);

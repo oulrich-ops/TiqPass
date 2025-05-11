@@ -241,10 +241,11 @@ public class TicketPdfService {
                                 byte[] ticketPdfBytes = generateTicketPdf(
                                         eventName,
                                         customerName,
-                                        eventDate,ticket.getValidationCode(),
-                                        ticket.getOrderItem().getCategoryName(),
+                                        ticket.getOrderItem().getCategory().getName(),
+                                        ticket.getValidationCode(),
                                         primaryColor,
-                                        imageLink
+                                        imageLink,
+                                        eventDate
                                 );
 
                                 // Ajouter le ticket au document principal

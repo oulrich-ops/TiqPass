@@ -21,6 +21,7 @@ public class EventGeneralRequest {
     private String startTime;
     private String endTime;
     private Boolean isPublished;
+    private Integer totalTickets;
 
     public static EventGeneralRequest fromEntity(Ticketing event) {
         EventGeneralRequest request = new EventGeneralRequest();

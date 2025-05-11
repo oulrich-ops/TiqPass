@@ -23,4 +23,8 @@ public class CustomersService implements ICustomersService {
         customersRepository.save(customer);
     }
 
+    public void updateCustomer(Payer customer) {
+        customersRepository.save(customer);
+    }
+
 }

@@ -51,6 +51,7 @@ public  class TicketingServiceImpl implements TicketingService {
             event.setStartDate(DateUtils.convertToLocalDate(request.getStartDate()));
             event.setEndDate(DateUtils.convertToLocalDate(request.getEndDate() != null ? request.getEndDate() : request.getStartDate()));
             event.setStartTime(LocalTime.parse(request.getStartTime()));
+            event.setTotalTickets(request.getTotalTickets());
             if (request.getEndTime() != null)
                 event.setEndTime(LocalTime.parse(request.getEndTime()));
 
@@ -170,6 +171,11 @@ public  class TicketingServiceImpl implements TicketingService {
     public List<TicketingResponse> getTicketingEventsByUserId(Long userId) {
         return ticketingRepository.findByUserId(userId).stream()
                 .map(event -> {
+                    Double minPrice = event.getPriceCategories().stream()
+                            .map(PriceCategory::getPrice)
+                            .min(Double::compareTo)
+                            .orElse(null);
+
                     TicketingResponse response = new TicketingResponse();
                     response.setId(event.getId());
                     response.setName(event.getName());
@@ -181,6 +187,7 @@ public  class TicketingServiceImpl implements TicketingService {
                     response.setBannerUrl(event.getCustomization() != null ? event.getCustomization().getImages().getBanner() : "");
                     response.setTotalTickets(event.getTotalTickets());
                     response.setIsPublished(event.getIsPublished());
+                    response.setMinPrice(minPrice);
                     return response;
                 })
                 .collect(Collectors.toList());

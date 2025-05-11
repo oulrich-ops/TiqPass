@@ -47,6 +47,8 @@ public class SecurityConfiguration {
                         .requestMatchers("/images/**", "/uploads/**").permitAll()
                         .requestMatchers("/payment/stripe/webhook").permitAll()
                         .requestMatchers("/ticketing/published-events").permitAll()
+                        .requestMatchers("/ticketing/{id}").permitAll()
+                        .requestMatchers("/payment/**").permitAll() // Allow all routes under /payment
                         .dispatcherTypeMatchers(DispatcherType.ERROR).authenticated()
                         .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
