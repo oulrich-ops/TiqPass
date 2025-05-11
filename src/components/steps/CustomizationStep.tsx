@@ -47,15 +47,13 @@ export function CustomizationStep({ data,ticketting_id, onUpdate }: Props) {
   
       if (values.images.banner instanceof File) {
         const fileUrl = await apiFileService.uploadFile(values.images.banner);
-        alert(fileUrl)
-        images.banner = fileUrl ; 
+         images.banner = fileUrl ; 
       }
       
       if (values.images.thumbnail instanceof File) {
         const fileUrl = await apiFileService.uploadFile(values.images.thumbnail);
         images.thumbnail = fileUrl; 
-        alert(fileUrl)
-
+ 
       }
   
       

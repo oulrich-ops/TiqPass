@@ -17,7 +17,6 @@ import { generalInformationSchema } from "@/schemas/event.schema"
 import {EventGeneral, EventType} from "@/types/EventTypes"
 import {Button} from "@/components/ui/button.tsx";
 import {apiService} from "@/config/apiServices.ts";
-import {toast} from "sonner";
 import {useEffect,useState} from "react";
 import { formatDate } from "../../utils/DateUtils.ts";
 import { toastWithDefaults } from "@/utils/Constantes.ts"
@@ -61,7 +60,7 @@ const [typesEvent, setTypeEvent] = useState<EventType[]>([])
             
             setTypeEvent(response.data as EventType[]);
         } else {
-            toast.error("Erreur, veuillez verifiez votre internet");
+            toastWithDefaults.error("Erreur, veuillez verifiez votre internet");
         }
     };
     useEffect(() => {
@@ -204,6 +203,7 @@ const [typesEvent, setTypeEvent] = useState<EventType[]>([])
             type="number"
             placeholder="Nombre total de tickets"
             {...field}
+            onChange={(e) => field.onChange(Number(e.target.value))}
           />
         </FormControl>
         <FormMessage />

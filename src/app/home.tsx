@@ -117,9 +117,7 @@ const defaultbanner = import.meta.env.VITE_DEFAULT_BANNER
         ) : publishedTicketting.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {publishedTicketting.map((event, index) => (
-              <Link 
-                to={`/event/${event.id}`} 
-                key={index} 
+              <div
                 className="group bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition duration-300"
               > 
                 <div className="relative h-48 overflow-hidden">
@@ -171,7 +169,7 @@ const defaultbanner = import.meta.env.VITE_DEFAULT_BANNER
                     </button>
                   </div>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
         ) : (

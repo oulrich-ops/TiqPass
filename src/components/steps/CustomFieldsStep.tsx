@@ -34,7 +34,7 @@ import { CustomField, PriceCategory } from "@/types/EventTypes"
 import { customFieldSchema } from "@/schemas/event.schema"
 import { apiService } from "@/config/apiServices"
 import { error } from "console"
-import { toast } from "sonner"
+import { toastWithDefaults } from "@/utils/Constantes"
 
 const formSchema = z.object({
   fields: z.array(customFieldSchema)
@@ -87,7 +87,7 @@ export function CustomFieldsStep({ data, priceCategories,ticketting_id, onUpdate
   apiService.addTickettingCustomFields(ticketting_id,champs).then(
     (res)=>{
       if(res.success){
-        toast.success("Champs ajoutés avec succès")
+        toastWithDefaults.success("Champs ajoutés avec succès")
         onUpdate(champs)
       }
     }
@@ -138,8 +138,7 @@ export function CustomFieldsStep({ data, priceCategories,ticketting_id, onUpdate
                     <TableHead>Nom du champ</TableHead>
                     <TableHead>Type</TableHead>
                     <TableHead>Obligatoire</TableHead>
-                    <TableHead>Catégories de prix</TableHead>
-                    <TableHead></TableHead>
+                     <TableHead></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -206,35 +205,7 @@ export function CustomFieldsStep({ data, priceCategories,ticketting_id, onUpdate
                           )}
                         />
                       </TableCell>
-                      <TableCell>
-                        <FormField
-                          control={form.control}
-                          name={`fields.${index}.priceCategoryIds`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <div className="flex flex-col gap-2">
-                                {priceCategories.map(category => (
-                                  <div key={category.id} className="flex items-center space-x-2">
-                                    <Checkbox
-                                      checked={field.value?.includes(category.id?.toString()??"")}
-                                      onCheckedChange={(checked) => {
-                                        const updatedIds = checked
-                                          ? [...field.value, category.id]
-                                          : field.value?.filter((id) => id !== category.id)
-                                        field.onChange(updatedIds)
-                                      }}
-                                    />
-                                    <FormLabel className="font-normal">
-                                      {category.name}
-                                    </FormLabel>
-                                  </div>
-                                ))}
-                              </div>
-                            </FormItem>
-                          )}
-                        />
-                      </TableCell>
-                      <TableCell>
+                                           <TableCell>
                         <Button
                           variant="ghost"
                           size="icon"

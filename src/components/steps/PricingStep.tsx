@@ -26,8 +26,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PriceCategory } from "@/types/EventTypes"
 import { priceCategorySchema } from "@/schemas/event.schema"
 import { apiService } from "@/config/apiServices"
-import { toast } from "sonner"
 import { error } from "console"
+import { toastWithDefaults } from "@/utils/Constantes"
 
 const formSchema = z.object({
   categories: z.array(priceCategorySchema)
@@ -70,12 +70,11 @@ export function PricingStep({ data,ticketting_id, onUpdate }: Props) {
     
 apiService.addTickettingPriceCategories(ticketting_id,categories).then((res)=>{
   if(res.success){
-    toast.success("Catégories de prix ajoutées avec succès")
+    toastWithDefaults.success("Catégories de prix ajoutées avec succès")
     onUpdate(categories)
   }
 }).catch((error)=>{
-  console.log(error);
-  toast.error("Erreur ressayer")
+  toastWithDefaults.error("Erreur ressayer")
 })
 
    
