@@ -10,6 +10,7 @@ export interface EventGeneral {
   endTime?: Date | string | null;
   endDate?: Date | string | null;
   isPublished?: boolean; 
+  totalTickets?: number;
 
 }
 

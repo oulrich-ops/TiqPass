@@ -19,11 +19,15 @@ export const apiRoutes = {
         getTicketingById: (ticketting_id: number) => `/ticketing/${ticketting_id}`,
         updateIsPublished: (eventId: number, isPublished: boolean) =>
             `/ticketing/${eventId}/publish?isPublished=${isPublished}`,
+        getPublishedEvents: `/ticketing/published-events`,
+        statslist: `/ticketing/my-ticketing-events/stats`,
         
         
     },
     payment: {
-        createSession: `/payment/create-checkout-session`
+        createSession: `/payment/create-checkout-session`,
+        orderDetails: (orderId: string) => `/payment/order/${orderId}`,
+
     },
     
     userEvents: {

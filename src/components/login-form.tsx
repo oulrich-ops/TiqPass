@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import {Link, useNavigate} from "react-router-dom";
-import {routes} from "@/routes.ts";
+import {routes} from "@/config/routes";
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "@/app/store.ts";
 import {apiService, Credentials} from "@/config/apiServices.ts";

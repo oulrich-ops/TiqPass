@@ -1,9 +1,9 @@
-import { Link } from 'react-router-dom';
-import { routes } from '@/routes';
+import { Link, useNavigate } from 'react-router-dom';
+import { routes } from '@/config/routes';
 import Header from "@/components/header.tsx";
 import { useEffect, useState } from 'react';
-import { Billeterie } from './app/features/UserBilletteries';
-import { apiService } from './config/apiServices';
+import { Billeterie } from './features/UserBilletteries';
+import { apiService } from '../config/apiServices';
 import { Calendar, Clock, MapPin, Tag, Ticket, PlusCircle, X, ChevronRight } from 'lucide-react';
 
 function Home() {
@@ -14,11 +14,14 @@ function Home() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 const defaultbanner = import.meta.env.VITE_DEFAULT_BANNER
 
+  const navigate = useNavigate();
+
+
   useEffect(() => {
     const fetchPublishedTicketting = async () => {
       setIsLoading(true);
       try {
-        const response = await apiService.getUserTicketting();
+        const response = await apiService.getPublishedEvents();
         if (!response.success) {
           throw new Error('Failed to fetch published ticketting');
         }
@@ -40,8 +43,13 @@ const defaultbanner = import.meta.env.VITE_DEFAULT_BANNER
     return () => clearTimeout(timer);
   }, []);
 
-  // Format de date pour l'affichage
-  const formatDate = (dateString: string) => {
+  const handleView = (name: string, id: number) => {
+    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const url = routes.ticketingPublicView(slug, id.toString());
+    navigate(url);
+  };
+
+   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return new Intl.DateTimeFormat('fr-FR', {
       day: 'numeric',
@@ -157,7 +165,8 @@ const defaultbanner = import.meta.env.VITE_DEFAULT_BANNER
                     <div className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-medium">
                       {/*event.available ? "Places disponibles" : "Complet"*/}
                     </div>
-                    <button className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                    <button className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                     onClick={() => handleView(event.name, event.id)}>
                       Réserver →
                     </button>
                   </div>

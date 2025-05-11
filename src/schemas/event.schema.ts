@@ -11,6 +11,7 @@ export const generalInformationSchema = z.object({
   startTime: z.union([z.string(), z.date()]).optional(),
     endTime: z.union([z.string(), z.date()]).nullable().optional(),
   endDate: z.union([z.string(), z.date()]).nullable().optional(),
+  totalTickets: z.number().optional(), // Ajout du champ optionnel
 }).refine((data) => {
   if (data.durationType !== "no_duration") {
     return data.startDate !== undefined

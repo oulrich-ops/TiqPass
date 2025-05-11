@@ -1,10 +1,10 @@
 // src/app/pages/Dashboard.tsx
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { use, useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@/app/store";
 import { apiService } from "@/config/apiServices";
-import { Billeterie } from '@/app/features/UserBilletteries';
+import { Billeterie, BilleterieStats } from '@/app/features/UserBilletteries';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -25,11 +25,12 @@ import {
   BarChart2
 } from "lucide-react";
 import AppLayout from "@/app/dashboardLayout/page";
+import { routes } from "@/config/routes";
 
 export default function Dashboard() {
   const user = useSelector((state: RootState) => state.user.user);
   const [isLoading, setIsLoading] = useState(false);
-  const [userEvents, setUserEvents] = useState<Billeterie[]>([]);
+  const [userEvents, setUserEvents] = useState<BilleterieStats[]>([]);
   const [stats, setStats] = useState({
     totalEvents: 0,
     activeEvents: 0,
@@ -66,15 +67,18 @@ export default function Dashboard() {
     { name: 'Dim', ventes: 25 },
   ];
 
+  const navigate = useNavigate();
+  
   useEffect(() => {
     const fetchUserEvents = async () => {
       setIsLoading(true);
       try {
-        const response = await apiService.getUserTicketting();
+        const response = await apiService.getUserSatsTicketting();
+        console.log("Données des événements :", response);
         if (!response.success) {
           throw new Error('Failed to fetch user events');
         }
-        const data = response.data as Billeterie[];
+        const data = response.data as BilleterieStats[];
         setUserEvents(data);
         
         // Calculate stats from fetched data
@@ -84,7 +88,7 @@ export default function Dashboard() {
           totalTickets: data.reduce((acc, event) => acc + (event.totalTickets || 0), 0),
           soldTickets: data.reduce((acc, event) => acc + (event.soldTickets || 0), 0),
           revenue: data.reduce((acc, event) => acc + (event.revenue || 0), 0),
-          visitors: data.reduce((acc, event) => acc + (event.visitors || 0), 0)
+          visitors: data.reduce((acc, event) => acc + (0), 0)
         });
       } catch (error) {
         console.error('Error fetching user events:', error);
@@ -97,7 +101,7 @@ export default function Dashboard() {
   }, []);
 
   return (
-    <AppLayout breadcrumb={[{ label: "Tableau de bord" }]}>
+    <AppLayout breadcrumb={[{ label: "Vue globale" }]}>
       <div className="space-y-6">
         {/* Welcome header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
@@ -105,8 +109,9 @@ export default function Dashboard() {
             <h1 className="text-2xl font-bold tracking-tight">Bienvenue, {user?.username?.split("@")[0] || "Utilisateur"}</h1>
             <p className="text-muted-foreground">Voici un résumé de vos activités et événements</p>
           </div>
-          <Button className="mt-4 md:mt-0">
-            <Plus className="mr-2 h-4 w-4" /> Créer un événement
+          <Button className="mt-4 md:mt-0" onClick={() => navigate(routes.eventCreation)}>
+            
+            <Plus className="mr-2 h-4 w-4" /> Billeterie
           </Button>
         </div>
 
@@ -152,7 +157,7 @@ export default function Dashboard() {
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.visitors}</div>
+              <div className="text-2xl font-bold">--</div>
               <p className="text-xs text-muted-foreground">
                 Sur tous vos événements
               </p>
@@ -273,7 +278,7 @@ export default function Dashboard() {
                                 </div>
                                 <div className="flex items-center text-sm text-muted-foreground mt-1">
                                   <Clock className="mr-1 h-4 w-4" />
-                                  {event.time || '19:00'}
+                                  {event.startDate || '19:00'}
                                 </div>
                               </div>
                               <div className="text-right">
@@ -283,14 +288,14 @@ export default function Dashboard() {
                                   <span className="text-muted-foreground">/{event.totalTickets || 0}</span>
                                 </div>
                                 <div className="mt-1">
-                                  <Badge variant={event.status === 'active' ? 'default' : 'secondary'}>
-                                    {event.status === 'active' ? 'Actif' : 'Brouillon'}
+                                  <Badge variant={event.isPublished === true ? 'default' : 'secondary'}>
+                                    {event.isPublished === true ? 'Publiée' : 'Brouillon'}
                                   </Badge>
                                 </div>
                               </div>
                             </div>
                             <div className="mt-3 flex justify-between items-center">
-                              <Progress value={(event.soldTickets / Math.max(event.totalTickets, 1)) * 100} className="w-32" />
+                              <Progress value={(event.soldTickets / Math.max(event.totalTickets!, 1)) * 100} className="w-32" />
                               <Button variant="outline" size="sm">
                                 Gérer
                               </Button>
@@ -369,19 +374,19 @@ export default function Dashboard() {
                               </div>
                               <div className="mt-1">
                                 <Badge variant={
-                                  new Date(event.date) < today 
+                                  new Date(event.startDate) < today 
                                     ? 'outline' 
-                                    : event.status === 'active' ? 'default' : 'secondary'
+                                    : event.isPublished === true ? 'default' : 'secondary'
                                 }>
-                                  {new Date(event.date) < today 
+                                  {new Date(event.startDate) < today 
                                     ? 'Terminé' 
-                                    : event.status === 'active' ? 'Actif' : 'Brouillon'}
+                                    : event.isPublished === true ? 'Actif' : 'Brouillon'}
                                 </Badge>
                               </div>
                             </div>
                           </div>
                           <div className="mt-3 flex justify-between items-center">
-                            <Progress value={(event.soldTickets / Math.max(event.totalTickets, 1)) * 100} className="w-32" />
+                            <Progress value={(event.soldTickets / Math.max(event.totalTickets!, 1)) * 100} className="w-32" />
                             <div className="space-x-2">
                               <Button variant="outline" size="sm">
                                 Statistiques

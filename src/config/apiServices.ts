@@ -3,9 +3,10 @@ import { apiRoutes } from "./apiRoutes";
 import User from "@/app/domain/User.ts";
 import apiClient, { apiRequest, ApiResponse } from "./apiServiceConfig";
 import {CustomField, Customization, EventGeneral, PriceCategory, WholeEventTicketting} from "@/types/EventTypes.ts";
-import { Billeterie } from "@/app/features/UserBilletteries";
+import { Billeterie, BilleterieStats } from "@/app/features/UserBilletteries";
 import { SelectedTicket } from "@/app/features/billeteriepublique/TicketingPublicView";
 import { PurchaseInterface } from "@/types/PaymentType";
+import { OrderDetails } from "@/types/OrderTypes";
 
 
 
@@ -55,6 +56,8 @@ export const apiService = {
 
     getUserTicketting: ()=> apiRequest<Billeterie[]>("GET", apiRoutes.events.list),
 
+    getUserSatsTicketting :()=> apiRequest<BilleterieStats[]>("GET", apiRoutes.events.statslist),
+
     addTickettingPriceCategories: (ticketting_id:number,categories:PriceCategory[]) =>
         apiRequest<void>("POST", apiRoutes.events.addPricing(ticketting_id.toString()), categories),
 
@@ -100,7 +103,7 @@ export const apiPaymentService = {
         apiRequest<{ sessionId: string }>("POST", apiRoutes.payment.createSession,purchase),
 
     getOrderDetails: (orderId: string) =>
-        apiRequest<SelectedTicket[]>("GET", apiRoutes.payment.orderDetails(orderId)),
+        apiRequest<OrderDetails>("GET", apiRoutes.payment.orderDetails(orderId)),
        
 
 }

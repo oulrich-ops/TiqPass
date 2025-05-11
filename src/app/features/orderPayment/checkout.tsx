@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { CheckCheck, Loader2, ShoppingBag } from "lucide-react";
 
-import { toastWithDefaults } from "@/Constantes";
 import { loadStripe, Stripe } from "@stripe/stripe-js";
 import { SelectedTicket } from "../billeteriepublique/TicketingPublicView";
 import { CustomerInfo, PurchaseInterface } from "@/types/PaymentType";
@@ -11,6 +10,7 @@ import LoadingOverlay from "./LoadingOverlay";
 import apiClient from "@/config/apiServiceConfig";
 import { apiPaymentService } from "@/config/apiServices";
 import { useParams } from "react-router-dom";
+import { toastWithDefaults } from "@/utils/Constantes";
 
 
 type props = {

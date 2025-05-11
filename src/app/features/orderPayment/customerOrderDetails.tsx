@@ -7,35 +7,15 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Ticket, Calendar, MapPin, Clock, Download, Printer, Mail, User, CreditCard, Share2 } from "lucide-react";
+import { OrderDetails as OrderDto } from "@/types/OrderTypes";
 
-interface OrderTicket {
-  id: string;
-  categoryName: string;
-  quantity: number;
-  unitPrice: number;
-  subtotal: number;
-}
 
-interface OrderDetails {
-  id: string;
-  orderNumber: string;
-  date: string;
-  status: "confirmed" | "canceled" | "refunded";
-  customerName: string;
-  customerEmail: string;
-  eventName: string;
-  eventDate: string;
-  eventTime: string;
-  eventLocation: string;
-  eventImage?: string;
-  tickets: OrderTicket[];
-  totalAmount: number;
-  paymentMethod: string;
-}
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
+
 
 export default function OrderDetails() {
   const { orderId } = useParams<{ orderId: string }>();
-  const [order, setOrder] = useState<OrderDetails | null>(null);
+  const [order, setOrder] = useState<OrderDto | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -47,7 +27,7 @@ export default function OrderDetails() {
         if (!response.success) {
           throw new Error('Failed to fetch order details');
         }
-        setOrder(response.data as OrderDetails);
+        setOrder(response.data as OrderDto);
       } catch (error) {
         console.error('Error fetching order details:', error);
         setError('Impossible de récupérer les détails de votre commande. Veuillez réessayer plus tard ou contacter notre support.');
@@ -114,10 +94,10 @@ export default function OrderDetails() {
         {/* Order confirmation header */}
         <div className="mb-8 text-center">
           <Badge variant={
-            order.status === 'confirmed' ? 'default' :
+            order.status === 'PAID' ? 'default' :
             order.status === 'refunded' ? 'destructive' : 'secondary'
           } className="mb-4">
-            {order.status === 'confirmed' ? 'Confirmée' :
+            {order.status === 'PAID' ? 'Confirmée' :
              order.status === 'refunded' ? 'Remboursée' : 'Annulée'}
           </Badge>
           <h1 className="text-3xl font-bold tracking-tight text-gray-900">Détails de votre commande</h1>
@@ -138,7 +118,7 @@ export default function OrderDetails() {
                 <div className="w-full md:w-1/3 h-36 bg-gray-100 rounded-md flex items-center justify-center">
                   {order.eventImage ? (
                     <img 
-                      src={order.eventImage} 
+                      src={`${API_BASE_URL}${order.eventImage}`} 
                       alt={order.eventName} 
                       className="w-full h-full object-cover rounded-md" 
                     />
@@ -183,11 +163,11 @@ export default function OrderDetails() {
                     <div className="flex items-start">
                       <Ticket className="mr-3 h-5 w-5 text-blue-600 mt-0.5" />
                       <div>
-                        <p className="font-medium">{ticket.categoryName}</p>
+                        <p className="font-medium">{ticket.category}</p>
                         <p className="text-sm text-gray-500">{ticket.quantity} x {ticket.unitPrice.toFixed(2)} €</p>
                       </div>
                     </div>
-                    <p className="font-medium">{ticket.subtotal.toFixed(2)} €</p>
+                    <p className="font-medium">{(ticket.quantity *ticket.unitPrice).toFixed(2)} €</p>
                   </div>
                 ))}
               </div>

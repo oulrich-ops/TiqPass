@@ -19,8 +19,8 @@ import {Button} from "@/components/ui/button.tsx";
 import {apiService} from "@/config/apiServices.ts";
 import {toast} from "sonner";
 import {useEffect,useState} from "react";
-import { formatDate } from "../../../utilities/DateUtils.ts";
-import { toastWithDefaults } from "@/Constantes.ts"
+import { formatDate } from "../../utils/DateUtils.ts";
+import { toastWithDefaults } from "@/utils/Constantes.ts"
 
 interface Props {
   data: EventGeneral
@@ -45,6 +45,9 @@ export function GeneralInformation({ data, onUpdate }: Props) {
       startTime: data.startTime,
       endDate: formatDate(Number(data.endDate)),
       endTime: data.endTime,
+      totalTickets: data.totalTickets || undefined, // Ajout de la valeur par défaut
+
+
     },
   })
 
@@ -77,6 +80,7 @@ const [typesEvent, setTypeEvent] = useState<EventType[]>([])
             startTime: values.startTime,
             endDate: values.endDate,
             endTime: values.endTime ,
+            totalTickets: values.totalTickets, 
          }
          
 
@@ -188,7 +192,27 @@ const [typesEvent, setTypeEvent] = useState<EventType[]>([])
                 </FormItem>
               )}
             />
+
+             <FormField
+    control={form.control}
+    name="totalTickets"
+    render={({ field }) => (
+      <FormItem>
+        <FormLabel>Nombre total de tickets</FormLabel>
+        <FormControl>
+          <Input
+            type="number"
+            placeholder="Nombre total de tickets"
+            {...field}
+          />
+        </FormControl>
+        <FormMessage />
+      </FormItem>
+    )}
+  />
           </div>
+
+          
 
           <div className="space-y-4">
               <FormField

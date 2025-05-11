@@ -2,7 +2,7 @@ import { Check, ArrowLeft, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 import { Routes, useNavigate } from "react-router-dom";
-import { routes } from "@/routes";
+import { routes } from "@/config/routes";
 
 export default function PaymentSuccess() {
   const [_, setLocation] = useLocation();

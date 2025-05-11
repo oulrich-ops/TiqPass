@@ -29,7 +29,8 @@ import {
 import {logout} from "@/app/features/user/userSlice.ts";
 import {toast} from "sonner";
 import {useNavigate} from "react-router-dom";
-import {routes} from "@/routes.ts"
+import {routes} from "@/config/routes"
+import { toastWithDefaults } from "@/utils/Constantes"
 
 interface AppLayoutProps {
     children?: ReactNode
@@ -55,7 +56,7 @@ export default function AppLayout({ children, breadcrumb = [] }: AppLayoutProps)
                     <Breadcrumb>
                         <BreadcrumbList>
                             <BreadcrumbItem>
-                                <BreadcrumbLink href="/">Accueil</BreadcrumbLink>
+                                <BreadcrumbLink href="/dashboard">Accueil</BreadcrumbLink>
 
                             </BreadcrumbItem>
 
@@ -89,9 +90,9 @@ export default function AppLayout({ children, breadcrumb = [] }: AppLayoutProps)
                             <DropdownMenuItem>Équipe</DropdownMenuItem>
                             <DropdownMenuItem
                                 onClick={() => {
-                                    dispatch(logout()); // Clear user and token from Redux and localStorage
-                                    toast.success("Déconnexion réussie !");
-                                    navigate(routes.login); // Redirect to the login page
+                                    dispatch(logout()); 
+                                    toastWithDefaults.success("Déconnexion réussie !");
+                                    navigate(routes.login); 
                                 }}
                             >
                                 Se deconnecter

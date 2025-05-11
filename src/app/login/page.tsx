@@ -4,7 +4,7 @@ import { LoginForm } from "@/components/login-form"
 import { motion } from "framer-motion";
 import flat_ticket from "@/assets/images/flat_ticket.png"
 import {Link} from "react-router-dom";
-import {routes} from "@/routes.ts";
+import {routes} from "@/config/routes";
 
 export default function LoginPage() {
   return (

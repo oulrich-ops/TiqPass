@@ -24,7 +24,7 @@ import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/ui/password-input'
 import { PhoneInput } from '@/components/ui/phone-input'
 import {Link, useNavigate} from "react-router-dom";
-import {routes} from '@/routes'
+import {routes} from '@/config/routes'
 import {apiService} from "@/config/apiServices.ts";
 import User from "@/app/domain/User.ts";
 import {useDispatch, useSelector} from "react-redux";
